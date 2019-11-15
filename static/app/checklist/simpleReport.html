@@ -1,0 +1,2237 @@
+<div id="report">
+    <h4 class="page-title2">
+        <i class=""></i>
+        <span>{{isShowDetail?'详细报告':'简单报告'}}</span><em
+            :data-status="reportData.reportStatus">{{reportData.reportStatus|changeNumToText}}</em>
+        <small></small>
+    </h4>
+
+    <div class="row">
+        <div class="report-action" style="width:100%">
+            <span class="report-general">
+                <a href="javascript:;" class="btn btn-default" @click="returnBack">返回</a>
+                <a href="javascript:;" class="btn btn-default "
+                    @click="showDetailReport">{{isShowDetail?'简单报告':'详细报告'}}</a>
+            </span>
+            <span class="report-actual">
+
+                <a v-if="listenAuthorityAndReportStatus.isConfirm" href="javascript:;" class="btn btn-default confirm"
+                    @click="confirmReport(2)">审核报告</a>
+                <a v-if="listenAuthorityAndReportStatus.isConfirmAgain" href="javascript:;"
+                    class="btn btn-warning confirm" @click="confirmReport(2)">重新审核报告</a>
+                <a v-if="listenAuthorityAndReportStatus.isPrint" href="javascript:;" class="btn btn-default prints"
+                    @click="printReport()">打印</a>
+                <a v-if="listenAuthorityAndReportStatus.isDownload" href="javascript:;" class="btn btn-success download"
+                    @click="downloadReport()">下载报告</a>
+                <a v-if="listenAuthorityAndReportStatus.isEdit" href="javascript:;" class="btn btn-default edit"
+                    @click="editReport(3)">编辑报告</a>
+                <a class="btn btn-danger cancle-edit-refer" id="cancel-edit" style="margin-right:10px;"
+                    @click="cancelEdit()" v-if="isCancelEdit">取消编辑</a>
+                <a class="btn btn-primary" id="submit-edit" v-if="isCancelEdit" @click="submitAndSaveEdit()">保存编辑</a>
+
+                <a v-if="!isCancelEdit" :disabled="isDrawBack" class="btn btn-danger pull-right"
+                    id="report-current-return" type="button" @click="takeReportBack">退回报告</a>
+                <a :disabled="isSubmit" class="btn btn-primary pull-right" id="report-current-btn" type="button"
+                    @click="submitReport(5)">提交报告
+                </a>
+            </span>
+        </div>
+        <div class="occupy-div"></div>
+
+    </div>
+    <div class="row">
+        <div class="report-container" id="report-container">
+            <div class="report-header">
+                <h3 class="text-center col-sm-10" data-name="institutionName">{{reportData.institutionName||'-'}}</h3>
+                <div class="report-names clearfix">
+                    <h3 class="col-sm-10 col-xs-10 text-center pull-left" data-name="">肌电图/诱发电位报告单</h3>
+                    <ul class="col-sm-2 pull-right report-right-sign">
+                        <li class="text-left living-visitor">门诊号<span
+                                class=" pull-right">{{reportData.hospitalNo}}</span></li>
+                        <li class="text-left report-number">肌电图号<span class=" pull-right">{{reportData.emgNo}}</span>
+                        </li>
+                        <li class="text-left patient-date">检查日期<span
+                                class=" pull-right">{{reportData.checkDate|datetimeTransform}}</span></li>
+                    </ul>
+                </div>
+                <div class="patient-info ">
+                    <ul class="patient-info-list col-sm-offset-1 col-sm-10 col-xs-10 clearfix">
+                        <li class="col-sm-2 patient-name">姓名<span class="text-left">{{reportData.patientName}}</span>
+                        </li>
+                        <li class="col-sm-2 patient-gender">性别<span
+                                class="text-left">{{patientInfo.gender|genderTurnText}}</span></li>
+                        <li class="col-sm-2 patient-age">年龄<span class=" text-left">{{patientInfo.age}}</span></li>
+                        <li class="col-sm-2 patient-lab">科室<span class="text-left"></span></li>
+                        <li class="col-sm-2 patient-zone">病区<span class="text-left"></span></li>
+                        <li class="col-sm-2 patient-bed">床号<span class="text-left">{{reportData.bedNo}}</span></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="report-color-status no-print clearfix">
+                <div class="pull-right">
+                    <span class="label label-default">未统计</span>
+                    <span class="label label-success">正常</span>
+                    <span class="label label-danger">异常</span>
+                </div>
+            </div>
+            <div id="data-report">
+                <form action="#" id="report-edit-data">
+                    <table class="report-item table  table-bordered table-striped">
+                        <caption>运动传导速度 (<span>MCV</span>)</caption>
+                        <thead>
+                            <tr>
+                                <th valign="middle" rowspan="2">神经名称</th>
+                                <th rowspan="2">刺激点</th>
+                                <th rowspan="2">记录点</th>
+                                <th colspan="2">传导速度m/s</th>
+                                <th colspan="2">潜伏期ms</th>
+                                <th colspan="2">波幅mv</th>
+                            </tr>
+                            <tr>
+                                <td>左侧</td>
+                                <td>右侧</td>
+                                <td>左侧</td>
+                                <td>右侧</td>
+                                <td>左侧</td>
+                                <td>右侧</td>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <template v-if="newMcvList!=undefined && newMcvList.length>0 && isCancelEdit==false">
+                                <tr v-for="(item,index) in newMcvList" :key="index">
+                                    <td style="width:10%;">{{item.nerveName|turnToText}}</td>
+                                    <td style="width:10%;">{{item.stimPointPositionName|turnToText}}</td>
+                                    <td style="width:10%;">{{item.collectPointPositionName|turnToText}}</td>
+                                    <td style="color:#000;" :data-refer="reportData.reportStatus!=3?item.speedNLeft:''"
+                                        :title="'正常值为：'+item.speedRLeft">
+                                        {{item.speedLeft|turnToText}}
+                                        <span v-if="item.speedRLeft && reportData.reportStatus!=3"
+                                            class="badge pull-right" style="background-color:orange;color:#fff;"
+                                            v-html="getCalcPercent(item.speedLeft,item.speedRLeft)"></span>
+                                    </td>
+                                    <td style="color:#000;" :data-refer="reportData.reportStatus!=3?item.speedNRight:''"
+                                        :title="'正常值为：'+item.speedRRight">
+                                        {{item.speedRight|turnToText}}
+                                        <span v-if="item.speedRRight&& reportData.reportStatus!=3"
+                                            class="badge pull-right" style="background-color:orange;color:#fff;"
+                                            v-html="getCalcPercent(item.speedRight,item.speedRRight)"></span>
+                                    </td>
+                                    <td style="color:#000;"
+                                        :data-refer="reportData.reportStatus!=3?item.latencyPeriodNLeft:''"
+                                        :title="'正常值为：'+item.latencyPeriodRLeft">
+                                        {{item.latencyPeriodLeft|turnToText}}
+                                        <span v-if="item.latencyPeriodRLeft && reportData.reportStatus!=3"
+                                            class="badge pull-right" style="background-color:orange;color:#fff;"
+                                            v-html="getCalcPercent(item.latencyPeriodLeft,item.latencyPeriodRLeft)"></span>
+                                    </td>
+                                    <td style="color:#000;"
+                                        :data-refer="reportData.reportStatus!=3?item.latencyPeriodNRight:''"
+                                        :title="'正常值为：'+item.latencyPeriodRRight">
+                                        {{item.latencyPeriodRight|turnToText}}
+                                        <span v-if="item.latencyPeriodRRight && reportData.reportStatus!=3"
+                                            class="badge pull-right" style="background-color:orange;color:#fff;"
+                                            v-html="getCalcPercent(item.latencyPeriodRight,item.latencyPeriodRRight)"></span>
+                                    </td>
+                                    <td style="color:#000;"
+                                        :data-refer="reportData.reportStatus!=3?item.amplitudeNLeft:''"
+                                        :title="'正常值为：'+item.amplitudeRLeft">
+                                        {{item.amplitudeLeft|turnToText}}
+                                        <span v-if="item.amplitudeRLeft && reportData.reportStatus!=3"
+                                            class="badge pull-right" style="background-color:orange;color:#fff;"
+                                            v-html="getCalcPercent(item.amplitudeLeft,item.amplitudeRLeft)"></span>
+                                    </td>
+                                    <td style="color:#000;"
+                                        :data-refer="reportData.reportStatus!=3?item.amplitudeNRight:''"
+                                        :title="'正常值为：'+item.amplitudeRRight">
+                                        {{item.amplitudeRight|turnToText}}
+                                        <span v-if="item.amplitudeRRight && reportData.reportStatus!=3"
+                                            class="badge pull-right" style="background-color:orange;color:#fff;"
+                                            v-html="getCalcPercent(item.amplitudeRight,item.amplitudeRRight)"></span>
+                                    </td>
+                                </tr>
+                            </template>
+                            <template v-else-if="newMcvList!=undefined && newMcvList.length>0 && isCancelEdit">
+                                <tr v-for="(item,index) in newMcvList" :key="index">
+                                    <td style="width:10%;">
+                                        <input type="text" name="project" value="mcv" hidden>
+                                        <input type="text" class="form-control" name="nerveName"
+                                            :value="item.nerveName|turnToText">
+                                        <input type="text" hidden name="idLeft" :value="item.idLeft">
+                                        <input type="text" hidden name="idRight" :value="item.idRight">
+                                    </td>
+                                    <td style="width:10%;">
+                                        <input class="form-control" type="text" name="stimPointPositionName"
+                                            :value="item.stimPointPositionName!='-'?item.stimPointPositionName:''">
+                                    </td>
+                                    <td style="width:10%;">
+                                        <input class="form-control" type="text" name="collectPointPositionName"
+                                            :value="item.collectPointPositionName!='-'?item.collectPointPositionName:''">
+                                    </td>
+                                    <td style="color:#000;" :data-refer="item.speedNLeft"
+                                        :title="'正常值为：'+item.speedRLeft">
+                                        <input class="form-control" type="text" name="speedLeft"
+                                            :value="item.speedLeft!='-'?item.speedLeft:''">
+                                    </td>
+                                    <td style="color:#000;" :data-refer="item.speedNRight"
+                                        :title="'正常值为：'+item.speedRRight">
+                                        <input class="form-control" type="text" name="speedRight"
+                                            :value="item.speedRight!='-'?item.speedRight:''">
+
+                                    </td>
+                                    <td style="color:#000;" :data-refer="item.latencyPeriodNLeft"
+                                        :title="'正常值为：'+item.latencyPeriodRLeft">
+                                        <input class="form-control" type="text" name="latencyPeriodLeft"
+                                            :value="item.latencyPeriodLeft!='-'?item.latencyPeriodLeft:''">
+
+                                    </td>
+                                    <td style="color:#000;" :data-refer="item.latencyPeriodNRight"
+                                        :title="'正常值为：'+item.latencyPeriodRRight">
+                                        <input class="form-control" type="text" name="latencyPeriodRight"
+                                            :value="item.latencyPeriodRight!='-'?item.latencyPeriodRight:''">
+
+                                    </td>
+                                    <td style="color:#000;" :data-refer="item.amplitudeNLeft"
+                                        :title="'正常值为：'+item.amplitudeRLeft">
+                                        <input class="form-control" type="text" name="amplitudeLeft"
+                                            :value="item.amplitudeLeft!='-'?item.amplitudeLeft:''">
+
+                                    </td>
+                                    <td style="color:#000;" :data-refer="item.amplitudeNRight"
+                                        :title="'正常值为：'+item.amplitudeRRight">
+                                        <input class="form-control" type="text" name="amplitudeRight"
+                                            :value="item.amplitudeRight!='-'?item.amplitudeRight:''">
+
+                                    </td>
+
+                                </tr>
+                            </template>
+                            <template v-else>
+                                <tr>
+                                    <td colspan="9" class="text-info">
+                                        没有MCV的检查数据
+                                    </td>
+                                </tr>
+                            </template>
+                        </tbody>
+                        <template v-if="isShowDetail && newMcvList.length>0">
+                            <tr>
+                                <td colspan="5" width="50%" class="handedness-left"
+                                    style="padding:20px;vertical-align:top!important">
+                                    <table width="100%" style="margin-bottom: 20px;"
+                                        class="table  table-bordered table-striped"
+                                        v-for="(val,key) in leftOrRightImgMcv.right" :key="key">
+                                        <thead>
+                                            <tr>
+                                                <th>{{key}}-右侧</th>
+                                                <th>传导速度m/s</th>
+                                                <th>潜伏期ms</th>
+                                                <th>波幅mv</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr v-for="(item,index) in val" :key="index">
+                                                <td>
+                                                    {{item.stimPointPositionName}} - {{item.collectPointPositionName}}
+                                                </td>
+                                                <td data-name="speed"
+                                                    :data-refer="reportData.reportStatus!=3?item.speedN:''"
+                                                    :title="'正常值为：'+item.speedR">
+                                                    {{item.speed}}
+                                                    <span class="badge pull-right"
+                                                        v-if="item.speedR && reportData.reportStatus!=3"
+                                                        style="background-color:orange;color:#fff;"
+                                                        v-html="getCalcPercent(item.speed,item.speedR)">
+                                                    </span>
+                                                </td>
+                                                <td data-name="latencyPeriod"
+                                                    :data-refer="reportData.reportStatus!=3?item.latencyPeriodN:''"
+                                                    :title="'正常值为：'+item.latencyPeriodR">
+                                                    {{item.latencyPeriod}}
+                                                    <span class="badge pull-right"
+                                                        v-if="item.latencyPeriodR && reportData.reportStatus!=3"
+                                                        style="background-color:orange;color:#fff;"
+                                                        v-html="getCalcPercent(item.latencyPeriod,item.latencyPeriodR)">
+                                                    </span>
+                                                </td>
+                                                <td data-name="amplitude"
+                                                    :data-refer="reportData.reportStatus!=3?item.amplitudeN:''"
+                                                    :title="'正常值为:'+item.amplitudeR">
+                                                    {{item.amplitude}}
+                                                    <span class="badge pull-right"
+                                                        v-if="item.amplitudeR && reportData.reportStatus!=3"
+                                                        style="background-color:orange;color:#fff;"
+                                                        v-html="getCalcPercent(item.amplitude,item.amplitudeR)">
+                                                    </span>
+                                                </td>
+
+                                            </tr>
+                                            <tr>
+                                                <td colspan="4" class="img-size"><b
+                                                        style="float:left;min-height:100px;">
+                                                        报告图片：</b>
+                                                    <br>
+                                                    <img style="width:100%; display:inline-block"
+                                                        :src="imgBaseUrl+reportData.emgNo+'_'+key+'_1'+'_1'"
+                                                        :alt="key+'右侧'+'的图片没有'">
+                                                </td>
+                                            </tr>
+                                        </tbody>
+
+                                    </table>
+                                </td>
+                                <td colspan="4" width="50%" class="handedness-right"
+                                    style="padding:20px;vertical-align:top!important">
+                                    <table width="100%" style="margin-bottom: 20px;"
+                                        class="table  table-bordered table-striped"
+                                        v-for="(val,key) in leftOrRightImgMcv.left" :key="key">
+                                        <thead>
+                                            <tr>
+                                                <th>{{key}}-左侧</th>
+                                                <th>传导速度m/s</th>
+                                                <th>潜伏期ms</th>
+                                                <th>波幅mv</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr v-for="(item,index) in val" :key="index">
+                                                <td>
+                                                    {{item.stimPointPositionName}} - {{item.collectPointPositionName}}
+                                                </td>
+                                                <td data-name="speed"
+                                                    :data-refer="reportData.reportStatus!=3?item.speedN:''"
+                                                    :title="'正常值为：'+item.speedR">
+                                                    {{item.speed}}
+                                                    <span class="badge pull-right"
+                                                        v-if="item.speedR && reportData.reportStatus!=3"
+                                                        style="background-color:orange;color:#fff;"
+                                                        v-html="getCalcPercent(item.speed,item.speedR)">
+                                                    </span>
+                                                </td>
+                                                <td data-name="latencyPeriod"
+                                                    :data-refer="reportData.reportStatus!=3?item.latencyPeriodN:''"
+                                                    :title="'正常值为：'+item.latencyPeriodR">
+                                                    {{item.latencyPeriod}}
+                                                    <span class="badge pull-right"
+                                                        v-if="item.latencyPeriodR && reportData.reportStatus!=3"
+                                                        style="background-color:orange;color:#fff;"
+                                                        v-html="getCalcPercent(item.latencyPeriod,item.latencyPeriodR)">
+                                                    </span>
+                                                </td>
+                                                <td data-name="amplitude"
+                                                    :data-refer="reportData.reportStatus!=3?item.amplitudeN:''"
+                                                    :title="'正常值为：'+item.amplitudeR">
+                                                    {{item.amplitude}}
+                                                    <span class="badge pull-right"
+                                                        v-if="item.amplitudeR && reportData.reportStatus!=3"
+                                                        style="background-color:orange;color:#fff;"
+                                                        v-html="getCalcPercent(item.amplitude,item.amplitudeR)">
+                                                    </span>
+                                                </td>
+
+                                            </tr>
+                                            <tr>
+                                                <td colspan="4" class="img-size"><b
+                                                        style="float:left;min-height:100px;">
+                                                        报告图片：</b><br>
+                                                    <img style="width:100%; display:inline-block"
+                                                        :src="imgBaseUrl+reportData.emgNo+'_'+key+'_0'+'_1'"
+                                                        :alt="key+'左侧'+'的图片没有'">
+                                                </td>
+                                            </tr>
+                                        </tbody>
+
+                                    </table>
+                                </td>
+                            </tr>
+                        </template>
+                    </table>
+                    <!-- scv -->
+                    <table class="report-item table table-bordered table-striped">
+                        <caption>感觉传导速度 (<span>SCV</span>)</caption>
+                        <thead>
+                            <tr>
+                                <th valign="middle" rowspan="2">神经名称</th>
+                                <th rowspan="2">刺激点</th>
+                                <th rowspan="2">记录点</th>
+                                <th colspan="2">传导速度m/s</th>
+                                <th colspan="2">潜伏期ms</th>
+                                <th colspan="2">波幅mv</th>
+                            </tr>
+                            <tr>
+                                <td>左侧</td>
+                                <td>右侧</td>
+                                <td>左侧</td>
+                                <td>右侧</td>
+                                <td>左侧</td>
+                                <td>右侧</td>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <template v-if="newScvList!=undefined && newScvList.length>0 && isCancelEdit==false">
+                                <tr v-for="(item,index) in newScvList" :key="index">
+                                    <td style="width:10%;">{{item.nerveName|turnToText}}</td>
+                                    <td style="width:10%;">{{item.stimPointPositionName|turnToText}}</td>
+                                    <td style="width:10%;">{{item.collectPointPositionName|turnToText}}</td>
+                                    <td style="color:#000;" :data-refer="reportData.reportStatus!=3?item.speedNLeft:''"
+                                        :title="'正常值为：'+item.speedRLeft">
+                                        {{item.speedLeft|turnToText}}
+                                        <span v-if="item.speedRLeft&& reportData.reportStatus!=3"
+                                            class="badge pull-right" style="background-color:orange;color:#fff;"
+                                            v-html="getCalcPercent(item.speedLeft,item.speedRLeft)"></span>
+                                    </td>
+                                    <td style="color:#000;" :data-refer="reportData.reportStatus!=3?item.speedNRight:''"
+                                        :title="'正常值为：'+item.speedRRight">
+                                        {{item.speedRight|turnToText}}
+                                        <span v-if="item.speedRRight&& reportData.reportStatus!=3"
+                                            class="badge pull-right" style="background-color:orange;color:#fff;"
+                                            v-html="getCalcPercent(item.speedRight,item.speedRRight)"></span>
+                                    </td>
+                                    <td style="color:#000;"
+                                        :data-refer="reportData.reportStatus!=3?item.latencyPeriodNLeft:''"
+                                        :title="'正常值为：'+item.latencyPeriodRLeft">
+                                        {{item.latencyPeriodLeft|turnToText}}
+                                        <span v-if="item.latencyPeriodRLeft && reportData.reportStatus!=3"
+                                            class="badge pull-right" style="background-color:orange;color:#fff;"
+                                            v-html="getCalcPercent(item.latencyPeriodLeft,item.latencyPeriodRLeft)"></span>
+                                    </td>
+                                    <td style="color:#000;"
+                                        :data-refer="reportData.reportStatus!=3?item.latencyPeriodNRight:''"
+                                        :title="'正常值为：'+item.latencyPeriodRRight">
+                                        {{item.latencyPeriodRight|turnToText}}
+                                        <span v-if="item.latencyPeriodRRight && reportData.reportStatus!=3"
+                                            class="badge pull-right" style="background-color:orange;color:#fff;"
+                                            v-html="getCalcPercent(item.latencyPeriodRight,item.latencyPeriodRRight)"></span>
+                                    </td>
+                                    <td style="color:#000;"
+                                        :data-refer="reportData.reportStatus!=3?item.amplitudeNLeft:''"
+                                        :title="'正常值为：'+item.amplitudeRLeft">
+                                        {{item.amplitudeLeft|turnToText}}
+                                        <span v-if="item.amplitudeRLeft && reportData.reportStatus!=3"
+                                            class="badge pull-right" style="background-color:orange;color:#fff;"
+                                            v-html="getCalcPercent(item.amplitudeLeft,item.amplitudeRLeft)"></span>
+                                    </td>
+                                    <td style="color:#000;"
+                                        :data-refer="reportData.reportStatus!=3?item.amplitudeNRight:''"
+                                        :title="'正常值为：'+item.amplitudeRRight">
+                                        {{item.amplitudeRight|turnToText}}
+                                        <span v-if="item.amplitudeRRight && reportData.reportStatus!=3"
+                                            class="badge pull-right" style="background-color:orange;color:#fff;"
+                                            v-html="getCalcPercent(item.amplitudeRight,item.amplitudeRRight)"></span>
+                                    </td>
+                                </tr>
+                            </template>
+                            <template v-else-if="newScvList!=undefined && newScvList.length>0 && isCancelEdit">
+                                <tr v-for="(item,index) in newScvList" :key="index">
+                                    <td style="width:10%;">
+                                        <input type="text" name="project" value="scv" hidden>
+                                        <input class="form-control" type="text" name="nerveName"
+                                            :value="item.nerveName!='-'?item.nerveName:''">
+                                        <input type="text" hidden name="idLeft" :value="item.idLeft">
+                                        <input type="text" hidden name="idRight" :value="item.idRight">
+                                    </td>
+                                    <td style="width:10%;">
+                                        <input class="form-control" type="text" name="stimPointPositionName"
+                                            :value="item.stimPointPositionName!='-'?item.stimPointPositionName:''">
+                                    </td>
+                                    <td style="width:10%;">
+                                        <input class="form-control" type="text" name="collectPointPositionName"
+                                            :value="item.collectPointPositionName!='-'?item.collectPointPositionName:''">
+                                    </td>
+                                    <td style="color:#000;" :data-refer="item.speedNLeft"
+                                        :title="'正常值为：'+item.speedRLeft">
+                                        <input class="form-control" type="text" name="speedLeft"
+                                            :value="item.speedLeft!='-'?item.speedLeft:''">
+                                    </td>
+                                    <td style="color:#000;" :data-refer="item.speedNRight"
+                                        :title="'正常值为：'+item.speedRRight">
+                                        <input class="form-control" type="text" name="speedRight"
+                                            :value="item.speedRight!='-'?item.speedRight:''">
+
+                                    </td>
+                                    <td style="color:#000;" :data-refer="item.latencyPeriodNLeft"
+                                        :title="'正常值为：'+item.latencyPeriodRLeft">
+                                        <input class="form-control" type="text" name="latencyPeriodLeft"
+                                            :value="item.latencyPeriodLeft!='-'?item.latencyPeriodLeft:''">
+
+                                    </td>
+                                    <td style="color:#000;" :data-refer="item.latencyPeriodNRight"
+                                        :title="'正常值为：'+item.latencyPeriodRRight">
+                                        <input class="form-control" type="text" name="latencyPeriodRight"
+                                            :value="item.latencyPeriodRight!='-'?item.latencyPeriodRight:''">
+
+                                    </td>
+                                    <td style="color:#000;" :data-refer="item.amplitudeNLeft"
+                                        :title="'正常值为：'+item.amplitudeRLeft">
+                                        <input class="form-control" type="text" name="amplitudeLeft"
+                                            :value="item.amplitudeLeft!='-'?item.amplitudeLeft:''">
+
+                                    </td>
+                                    <td style="color:#000;" :data-refer="item.amplitudeNRight"
+                                        :title="'正常值为：'+item.amplitudeRRight">
+                                        <input class="form-control" type="text" name="amplitudeRight"
+                                            :value="item.amplitudeRight!='-'?item.amplitudeRight:''">
+
+                                    </td>
+                                </tr>
+                            </template>
+                            <template v-else>
+                                <tr>
+                                    <td colspan="9" class="text-info">没有SCV的检查数据</td>
+                                </tr>
+                            </template>
+                        </tbody>
+                        <template v-if="isShowDetail && newScvList.length>0">
+                            <tr>
+                                <td colspan="5" width="50%" class="handedness-left"
+                                    style="padding:20px;vertical-align:top!important">
+                                    <table width="100%" style="margin-bottom: 20px;"
+                                        class="table  table-bordered table-striped"
+                                        v-for="(val,key) in leftOrRightImgScv.right" :key="key">
+                                        <thead>
+                                            <tr>
+                                                <th>{{key}}-右侧</th>
+                                                <th>传导速度m/s</th>
+                                                <th>潜伏期ms</th>
+                                                <th>波幅mv</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr v-for="(item,index) in val" :key="index">
+                                                <td>
+                                                    {{item.stimPointPositionName}} - {{item.collectPointPositionName}}
+                                                </td>
+                                                <td data-name="speed"
+                                                    :data-refer="reportData.reportStatus!=3?item.speedN:''"
+                                                    :title="'正常值为'+item.speedR">
+                                                    {{item.speed}}
+                                                    <span class="badge pull-right"
+                                                        v-if="item.speedR && reportData.reportStatus!=3"
+                                                        style="background-color:orange;color:#fff;"
+                                                        v-html="getCalcPercent(item.speed,item.speedR)"
+                                                        v-html="getCalcPercent(item.speed,item.speedR)">
+                                                    </span>
+                                                </td>
+                                                <td data-name="latencyPeriod"
+                                                    :data-refer="reportData.reportStatus!=3?item.latencyPeriodN:''"
+                                                    :title="'正常值为：'+item.latencyPeriodR">
+                                                    {{item.latencyPeriod}}
+                                                    <span class="badge pull-right"
+                                                        v-if="item.latencyPeriodR && reportData.reportStatus!=3"
+                                                        style="background-color:orange;color:#fff;"
+                                                        v-html="getCalcPercent(item.latencyPeriod,item.latencyPeriodR)">
+                                                    </span>
+                                                </td>
+                                                <td data-name="amplitude"
+                                                    :data-refer="reportData.reportStatus!=3?item.amplitudeN:''"
+                                                    :title="'正常值为：'+item.amplitudeR">
+                                                    {{item.amplitude}}
+                                                    <span class="badge pull-right"
+                                                        v-if="item.amplitudeR && reportData.reportStatus!=3"
+                                                        style="background-color:orange;color:#fff;"
+                                                        v-html="getCalcPercent(item.amplitude,item.amplitudeR)">
+                                                    </span>
+                                                </td>
+
+                                            </tr>
+                                            <tr>
+                                                <td colspan="4" class="img-size"><b
+                                                        style="float:left;min-height:100px;">
+                                                        报告图片：</b>
+                                                    <br>
+                                                    <img style="width:100%; display:inline-block"
+                                                        :src="imgBaseUrl+reportData.emgNo+'_'+key+'_1'+'_3'"
+                                                        :alt="key+'右侧'+'的图片没有'">
+                                                </td>
+                                            </tr>
+                                        </tbody>
+
+                                    </table>
+                                </td>
+                                <td colspan="4" width="50%" class="handedness-right"
+                                    style="padding:20px;vertical-align:top!important">
+                                    <table width="100%" style="margin-bottom: 20px;"
+                                        class="table  table-bordered table-striped"
+                                        v-for="(val,key) in leftOrRightImgMcv.left" :key="key">
+                                        <thead>
+                                            <tr>
+                                                <th>{{key}}-左侧</th>
+                                                <th>传导速度m/s</th>
+                                                <th>潜伏期ms</th>
+                                                <th>波幅mv</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr v-for="(item,index) in val" :key="index">
+                                                <td>
+                                                    {{item.stimPointPositionName}} - {{item.collectPointPositionName}}
+                                                </td>
+                                                <td data-name="speed"
+                                                    :data-refer="reportData.reportStatus!=3?item.speedN:''"
+                                                    :title="'正常值为：'+item.speedR">
+                                                    {{item.speed}}
+                                                    <span class="badge pull-right"
+                                                        v-if="item.speedR && reportData.reportStatus!=3"
+                                                        style="background-color:orange;color:#fff;"
+                                                        v-html="getCalcPercent(item.speed,item.speedR)">
+                                                    </span>
+                                                </td>
+                                                <td data-name="latencyPeriod"
+                                                    :data-refer="reportData.reportStatus!=3?item.latencyPeriodN:''"
+                                                    :title="'正常值为：'+item.latencyPeriodR">
+                                                    {{item.latencyPeriod}}
+                                                    <span class="badge pull-right"
+                                                        v-if="item.latencyPeriodR && reportData.reportStatus!=3"
+                                                        style="background-color:orange;color:#fff;"
+                                                        v-html="getCalcPercent(item.latencyPeriod,item.latencyPeriodR)">
+                                                    </span>
+                                                </td>
+                                                <td data-name="amplitude"
+                                                    :data-refer="reportData.reportStatus!=3?item.amplitudeN:''"
+                                                    :title="'正常值为:'+item.amplitudeR">
+                                                    {{item.amplitude}}
+                                                    <span class="badge pull-right"
+                                                        v-if="item.amplitudeR && reportData.reportStatus!=3"
+                                                        style="background-color:orange;color:#fff;"
+                                                        v-html="getCalcPercent(item.amplitude,item.amplitudeR)">
+                                                    </span>
+                                                </td>
+
+                                            </tr>
+                                            <tr>
+                                                <td colspan="4" class="img-size"><b
+                                                        style="float:left;min-height:100px;">
+                                                        报告图片：</b><br>
+                                                    <img style="width:100%; display:inline-block"
+                                                        :src="imgBaseUrl+reportData.emgNo+'_'+key+'_0'+'_3'"
+                                                        :alt="key+'左侧'+'的图片没有'">
+                                                </td>
+                                            </tr>
+                                        </tbody>
+
+                                    </table>
+                                </td>
+                            </tr>
+                        </template>
+                    </table>
+
+                    <!-- ssr -->
+                    <table class="report-item table  table-bordered table-striped">
+                        <caption>皮肤交感反应 (<span>SSR</span>)</caption>
+                        <thead>
+                            <tr>
+                                <th width="20%" valign="middle">神经名称</th>
+                                <th width="20%">刺激点</th>
+                                <th width="20%">记录点</th>
+                                <th width="20%">潜伏期s</th>
+                                <th width="20%">峰值mV</th>
+                            </tr>
+
+                        </thead>
+                        <tbody>
+
+                            <template v-if="ssrList!=undefined && ssrList.length>0 && isCancelEdit==false">
+                                <tr v-for="(item,index) in ssrList" :key="index">
+                                    <td colspan="5" style="padding:0;">
+                                        <table class="ssr-table-data" style="width:100%; margin:0;padding:0;">
+                                            <tbody>
+                                                <tr>
+                                                    <td width="20%">{{item.nerveName}}</td>
+                                                    <td width="20%">{{item.stimPointPositionName}}</td>
+                                                    <td width="20%">{{item.collectPointPositionName}}</td>
+                                                    <td width="20%" style="color:#000;"
+                                                        :data-refer="reportData.reportStatus!=3?item.latencyPeriod1N:''"
+                                                        :title="'正常值为：'+item.latencyPeriod1R">
+                                                        {{item.latencyPeriod1}}
+                                                        <span v-if="item.latencyPeriod1R && reportData.reportStatus!=3"
+                                                            class="badge pull-right"
+                                                            style="background-color:orange;color:#fff;"
+                                                            v-html="getCalcPercent(item.latencyPeriod1,item.latencyPeriod1R)"></span>
+                                                    </td>
+                                                    <td width="20%" style="color:#000;"
+                                                        :data-refer="reportData.reportStatus!=3?item.vppN:''"
+                                                        :title="'正常值为：'+item.vppR">
+                                                        {{item.vpp}}
+                                                        <span v-if="item.vppR && reportData.reportStatus!=3"
+                                                            class="badge pull-right"
+                                                            style="background-color:orange;color:#fff;"
+                                                            v-html="getCalcPercent(item.vpp,item.vppR)"></span>
+                                                    </td>
+                                                </tr>
+                                                <tr v-if="isShowDetail">
+                                                    <td colspan="5" class="img-size"><b
+                                                            style="float:left;min-height:100px;">
+                                                            报告图片：</b><br>
+                                                        <img style="width:100%; display:inline-block"
+                                                            :src="'http://files.kfylt.cn/'+reportData.emgNo+'_7'"
+                                                            :alt="item.nerveName+'的图片没有找到'">
+                                                    </td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </td>
+                                </tr>
+                            </template>
+                            <template v-else-if="ssrList!=undefined && ssrList.length>0 && isCancelEdit">
+                                <tr v-for="(item,index) in ssrList" :key="index">
+                                    <td colspan="5" style="padding:0;">
+                                        <table class="ssr-table-data" style="width:100%; margin:0;padding:0;">
+                                            <tbody>
+                                                <tr>
+                                                    <td style="padding:8px;">
+                                                        <input type="text" name="project" value="ssr" hidden>
+                                                        <input type="text" name="nerveName"
+                                                            :value="item.nerveName!='-'?item.nerveName:''"
+                                                            class="form-control">
+                                                        <input type="text" hidden name="id" :value="item.id">
+                                                    </td>
+                                                    <td style="padding:8px;">
+                                                        <input type="text" name="stimPointPositionName"
+                                                            :value="item.stimPointPositionName!='-'?item.stimPointPositionName:''"
+                                                            class="form-control">
+                                                    </td>
+                                                    <td style="padding:8px;">
+                                                        <input type="text" name="collectPointPositionName"
+                                                            :value="item.collectPointPositionName!='-'?item.collectPointPositionName:''"
+                                                            class="form-control">
+                                                    </td>
+                                                    <td style="color:#000;padding:8px;"
+                                                        :data-refer="item.latencyPeriod1N"
+                                                        :title="'正常值为：'+item.latencyPeriod1R">
+                                                        <input type="text" name="latencyPeriod1"
+                                                            :value="item.latencyPeriod1!='-'?item.latencyPeriod1:''"
+                                                            class="form-control">
+                                                    </td>
+                                                    <td style="color:#000;padding:8px;" :data-refer="item.vppN"
+                                                        :title="'正常值为：'+item.vppR">
+                                                        <input type="text" name="vpp" :value="item.vpp!='-'?item.vpp:''"
+                                                            class="form-control">
+                                                    </td>
+                                                </tr>
+                                                <tr v-if="isShowDetail">
+                                                    <td colspan="5" class="img-size"><b
+                                                            style="float:left; min-height:100px;">
+                                                            报告图片：</b><br>
+                                                        <img style="width:100%; display:inline-block"
+                                                            :src="imgBaseUrl+reportData.emgNo+'_7'"
+                                                            :alt="item.nerveName+'的图片没有找到'">
+                                                    </td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </td>
+                                </tr>
+                            </template>
+                            <template v-else>
+                                <tr>
+                                    <td colspan="5" class="text-info">没有SSR的检查数据</td>
+                                </tr>
+                            </template>
+                        </tbody>
+                    </table>
+                </form>
+
+            </div>
+
+            <div class="report-advice">
+                <table class="table">
+                    <caption>诊断意见</caption>
+                    <tbody>
+                        <tr>
+                            <td>
+                                <div class="alert alert-danger report-check-result">
+
+                                    <ul v-for="(v,k) in diagnoseAdvice" :key="k">
+                                        <li>
+                                            {{k}}
+                                            <ul v-for="(item,index) in v" :key="index">
+                                                <li>
+                                                    <span
+                                                        style="min-width: 100px; display: inline-block;">{{item.projectItem}}</span>
+                                                    <span
+                                                        style="min-width: 100px; display: inline-block;">{{item.handedness|turnToText2}}</span>
+                                                    <span
+                                                        style="min-width: 100px; display: inline-block;">{{item.nerveName}}</span>
+                                                    <span
+                                                        style="min-width: 100px; display: inline-block;">{{item.stimPointPositionName}}</span>
+                                                    <span
+                                                        style="min-width: 100px; display: inline-block;">{{item.collectPointPositionName}}</span>
+                                                    <span
+                                                        style="min-width: 100px; display: inline-block;">{{item.diagnosisTerm}}</span>
+                                                </li>
+                                            </ul>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+                <table class="table">
+                    <caption>赋分</caption>
+                    <tbody>
+                        <tr>
+                            <td>
+                                <div class="alert alert-success report-check-score">
+                                    <label>赋分结果：
+                                        <span class="label label-default"
+                                            style="background-color:black;">{{evaluate.result}}</span>
+                                    </label>
+                                    <label>赋分分数：
+                                        <span class="label label-default"
+                                            style="background-color:black;">{{evaluate.score}}</span>
+                                    </label>
+                                    <label>赋分等级：
+                                        <span class="label label-default"
+                                            style="background-color:black;">{{evaluate.level}}</span>
+                                    </label>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+                <table class="table">
+                    <caption>检查结果</caption>
+                    <tbody>
+                        <tr>
+                            <td colspan="7" class="advice">
+                                <textarea name="advice" id="advice-message" readonly
+                                    style="text-align:left;text-indent: 0;">{{note|turnToText}}</textarea>
+                            </td>
+                        </tr>
+                    </tbody>
+                    <tfoot>
+                        <tr>
+                            <td colspan="5" class="col-sm-8 col-xs-8">
+                            </td>
+                            <td>
+                                <div class="form-group operate-doctor-name doctor-submit-name">
+                                    <label for="doctor-submit">提交医师</label>
+                                    <input type="text" class="form-control text-info alter-info" id="doctor-submit"
+                                        v-model="doctorNameOperate" readonly>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="form-group operate-doctor-name doctor-confirm-name">
+                                    <label for="doctor-confirm">审核医师</label>
+                                    <input type="text" class="form-control text-info alter-info" id="doctor-confirm"
+                                        v-model="doctorNameDiagnosis" readonly>
+                                </div>
+                            </td>
+                            <!-- <td class="col-sm-2 col-xs-2">
+
+                            </td>
+
+                            <td class="col-sm-1 col-xs-1"></td> -->
+                            <!-- <td class="col-sm-1 col-xs-1">
+                                <a :disabled="isSubmit" class="btn btn-primary no-print" id="report-current-btn"
+                                    type="button" @click="submitReport(5)">提交报告
+                                </a>
+                            </td> -->
+                            <!-- <td class="col-sm-1 col-xs-1">
+                                <a v-if="!isCancelEdit" :disabled="isDrawBack" class="btn btn-danger no-print"
+                                    id="report-current-return" type="button" @click="takeReportBack">退回报告</a>
+                            </td> -->
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="dialog-modal">
+            <check-code :num="num"></check-code>
+            <confirm-result :advices="diagnoseAdvice" :note="note"></confirm-result>
+            <give-back></give-back>
+        </div>
+    </div>
+</div>
+
+<script>
+    Vue.component('checkCode', {
+        template: `
+        <div class="modal fade" id="myModal" tabindex="-1" role="dialog">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                        <h4 class="modal-title" id="myModalLabel">二次密码验证</h4>
+                    </div>
+                    <div class="modal-body">
+                        <div class="pwd-text">
+                            <span class="text-warning" style="display:block;">当前操作需要验证权限功能，请输入验证密码：</span>
+                            <div style="width:300px;margin:10px auto;">
+                                    <label for="modal-pwd">密码：</label>
+                                    <input style="width:240px; margin:auto;" v-model="pwd" @keydown.enter="submitToCheckCode"  type="password" class="form-control input-inline" id="modal-pwd" placeholder="请输入密码" >    
+                            </div>
+                        </div> 
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default cancel-btn" data-dismiss="modal" @click="cancelCheckCode">关闭</button>
+                        <button type="button" class="btn btn-primary confirm-btn" @click="submitToCheckCode">确定</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        `,
+        data() {
+            return {
+                pwd: '',
+            }
+        },
+        props: {
+            num: Number
+        },
+        methods: {
+            submitToCheckCode() {
+                let username = sessionStorage.nickname;
+                let pwd = this.pwd;
+                if (pwd) {
+                    Shinez.post('/main/login', {
+                        pwd,
+                        username
+                    }, (ret) => {
+                        if (ret.code == 0) {
+                            $('#myModal').modal('hide')
+                            this.pwd = ""
+                            if (this.num == 2) {
+                                $('#myModal2').modal('show')
+                            } else if (this.num == 3) {
+                                $('.edit').hide()
+                                report.isCancelEdit = true;
+                            } else if (this.num == 5) {
+                                report.reportData.reportStatus = 1;
+                                report.doctorNameOperate = JSON.parse(sessionStorage.doctorInfo)
+                                    .doctorName;
+                                let {
+                                    id,
+                                    reportStatus,
+                                    patientId
+                                } = report.reportData;
+                                Shinez.put('/check/reportStatus', {
+                                    id,
+                                    reportStatus,
+                                    patientId
+                                }, (ret) => {
+                                    if (ret.code == 0) {
+                                        Shinez.tip('success', `提交报告成功,报告状态为未审核`)
+                                        let {
+                                            id,
+                                            reportStatus,
+                                            hospitalNo
+                                        } = report.reportData;
+                                        let doctorIdOperate = JSON.parse(sessionStorage
+                                            .doctorInfo).id;
+                                        Shinez.put('/check/data', {
+                                            id,
+                                            reportStatus,
+                                            hospitalNo,
+                                            doctorIdOperate
+                                        }, (ret) => {
+                                            if (ret.code != 0) {
+                                                Shinez.tip('error', `错误提示${ret.msg}`)
+                                            }
+                                        });
+                                    } else {
+                                        Shinez.tip('error', `提交报告失败${ret.msg}`)
+                                    }
+                                });
+
+
+                            } else if (this.num == 6) {
+                                report.reportData.reportStatus = 2;
+
+                                let note = report.note;
+                                let {
+                                    id,
+                                    reportStatus,
+                                    patientId
+                                } = report.reportData;
+                                Shinez.put('/check/reportStatus', {
+                                    id,
+                                    reportStatus,
+                                    patientId,
+
+                                }, (ret) => {
+                                    if (ret.code == 0) {
+                                        Shinez.tip('success', `审核报告成功,报告状态为已审核`)
+
+                                        let {
+                                            id,
+                                            reportStatus,
+                                            hospitalNo
+                                        } = report.reportData;
+                                        let doctorIdDiagnosis = JSON.parse(sessionStorage
+                                            .doctorInfo).id;
+                                        Shinez.put('/check/data', {
+                                            id,
+                                            reportStatus,
+                                            hospitalNo,
+                                            doctorIdDiagnosis,
+                                            note
+                                        }, (ret) => {
+                                            if (ret.code != 0) {
+                                                Shinez.tip('error', `错误提示${ret.msg}`)
+                                            }
+                                        });
+                                    } else {
+                                        Shinez.tip('error', `审核报告失败${ret.msg}`)
+                                    }
+                                });
+                            }
+                        } else {
+                            Shinez.tip('error', `当前密码有错${ret.msg}`)
+                        }
+                    })
+                } else {
+                    Shinez.tip('error', '密码不能为空')
+                }
+            },
+            cancelCheckCode() {
+                $('#myModal').on('hide.bs.modal', () => {
+                    this.pwd = '';
+
+                })
+            }
+        }
+    })
+
+    Vue.component('confirmResult', {
+        template: `
+        <div class="modal fade" id="myModal2" tabindex="-1" role="dialog">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                        <h4 class="modal-title" id="myModalLabel">审核报告</h4>
+                    </div>
+                    <div class="modal-body">
+                        <div class="form-group">
+                            <label>诊断意见：</label>
+                        <div>
+                                <ul v-for="(v,k) in advices" :key="k">
+                                        <li>
+                                            {{k}}
+                                            <ul v-for="(item,index) in v" :key="index">
+                                                <li>
+                                                    <span>{{item.projectItem}}</span>
+                                                    <span>{{item.handedness|turnToText}}</span>
+                                                    <span>{{item.nerveName}}</span>
+                                                    <span>{{item.stimPointPositionName}}</span>
+                                                    <span>{{item.collectPointPositionName}}</span>
+                                                    <span>{{item.diagnosisTerm}}</span>
+                                                </li>
+                                            </ul>
+                                        </li>
+                                    </ul>    
+                        </div>
+                        </div>
+                        <div>
+                            <label>检查结果：<a class="btn btn-danger btn-xs clear-text" @click="clearResult">清除</a></label>
+                            <div>
+                                <textarea ref="checkResult" type="text" class="form-control" rows="6" style="resize:none;">{{note}}</textarea>
+                            </div>
+                        </div> 
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default cancel-btn" data-dismiss="modal" @click="cancelSubmitResult">关闭</button>
+                        <button type="button" class="btn btn-primary confirm-btn" @click="submitResult">确定</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        `,
+        props: {
+            advices: Object,
+            note: String,
+        },
+        data() {
+            return {
+                //result:''
+            }
+        },
+        filters: {
+            turnToText(val) {
+                if (val != undefined) {
+                    switch (val.toString()) {
+                        case '0':
+                            return '左侧';
+                        case '1':
+                            return '右侧';
+                        default:
+                            return '-';
+                    }
+                } else {
+                    return '-'
+                }
+            }
+        },
+        methods: {
+            clearResult() {
+                this.$refs.checkResult.value = ''
+            },
+            cancelSubmitResult() {
+                $('#myModal2').on('hide.bs.modal', () => {
+                    this.$refs.checkResult.value = ''
+                })
+            },
+            submitResult() {
+
+                report.note = this.$refs.checkResult.value;
+                report.isSubmit = false;
+                report.doctorNameDiagnosis = JSON.parse(sessionStorage.doctorInfo)
+                    .doctorName;
+                $('#doctor-confirm').val(JSON.parse(sessionStorage.doctorInfo).doctorName);
+                $('#report-current-btn').show().text('审核完毕');
+                $('#myModal2').modal('hide')
+            }
+        }
+    })
+
+    Vue.component('giveBack', {
+        template: `
+        <div class="modal fade" id="myModal4" tabindex="-1" role="dialog">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                        <h4 class="modal-title" id="myModalLabel">二次密码验证</h4>
+                    </div>
+                    <div class="modal-body">
+                        <p class="text-danger return-text"  style="width:300px;margin:auto;">确定退回操作时，报告将成为退回状态，如果不想退回请选择取消操作。</p>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default cancel-btn" data-dismiss="modal" @click="cancelDelete">关闭</button>
+                        <button type="button" class="btn btn-primary confirm-btn" @click="submitDelete">确定</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        `,
+        methods: {
+            cancelDelete() {
+                $('#myModal4').modal('hide')
+            },
+            submitDelete() {
+                report.reportData.reportStatus = 3
+                let {
+                    id,
+                    reportStatus,
+                    patientId
+                } = report.reportData;
+                Shinez.put('/check/reportStatus', {
+                    id,
+                    reportStatus,
+                    patientId
+                }, (ret) => {
+                    if (ret.code == 0) {
+                        $('#myModal4').modal('hide')
+                        Shinez.tip('success', `退回报告成功,报告状态为已退回`)
+                    } else {
+                        Shinez.tip('error', `退回报告失败${ret.msg}`)
+                    }
+                });
+
+            }
+        }
+    })
+
+    var report = new Vue({
+        el: "#report",
+        data() {
+            return {
+                pageIndex: 1,
+                pageSize: 1,
+                checkGroup: '',
+                emgNo: '',
+                reportData: {},
+                patientInfo: {},
+                mcvList: [],
+                ssrList: [],
+                scvList: [],
+                newMcvList: [],
+                newScvList: [],
+                doctorNameOperate: '',
+                doctorNameDiagnosis: '',
+                diagnoseAdvice: {},
+                advice: [],
+                evaluate: {},
+                isShowDetail: false,
+                isEdit: false,
+                isConfirm: false,
+                isConfirmAgain: false,
+                isPrint: false,
+                isDownload: false,
+                isSubmit: false,
+                isDrawBack: false,
+                isCancelEdit: false,
+                note: '',
+                num: 0,
+                imgBaseUrl: 'http://files.kfylt.cn/'
+            }
+        },
+        filters: {
+            changeNumToText(val) {
+                if (val) {
+                    switch (val.toString()) {
+                        case '0':
+                            return '未分析'
+                            break;
+                        case '1':
+                            return '未审核'
+                            break;
+                        case '2':
+                            return '已审核'
+                            break;
+                        case '3':
+                            return '已退回'
+                            break;
+                        case '4':
+                            return '未提交'
+                    }
+                }
+            },
+            //日期转换
+            datetimeTransform(val) {
+                let date = new Date(val)
+                let years = date.getFullYear()
+                let month = date.getMonth() + 1
+                let daily = date.getDay()
+                month = month < 10 ? '0' + month : month;
+                daily = daily < 10 ? '0' + daily : daily;
+                return years + '-' + month + '-' + daily
+            },
+
+            genderTurnText(val) {
+                if (val != undefined) {
+                    switch (val.toString()) {
+                        case '0':
+                            return '男';
+                        case '1':
+                            return '女';
+                        default:
+                            return '-'
+                    }
+                } else {
+                    return '-'
+                }
+            },
+            turnToText(val) {
+                if (val != undefined) {
+                    if (val.toString() == '') {
+                        return '-'
+                    } else {
+                        return val;
+                    }
+                } else {
+                    return '-'
+                }
+            },
+            turnToText2(val) {
+                if (val != undefined) {
+                    switch (val.toString()) {
+                        case '0':
+                            return '左侧';
+                        case '1':
+                            return '右侧';
+                        default:
+                            return '-';
+                    }
+                } else {
+                    return '-'
+                }
+            },
+
+        },
+        computed: {
+            listenAuthorityAndReportStatus() {
+
+                let authority = JSON.parse(localStorage.authorities)[1].roleCode;
+                let status = this.reportData.reportStatus
+                switch (authority) {
+                    case 'ROLE_ROLE1':
+                        //超级管理员所有的权利
+                        var power = [1, 2, 3, 4];
+                        if (power.indexOf(status) != -1) {
+                            this.getOperatorButton(status);
+                        }
+
+                        break
+                    case 'ROLE_ROLE02':
+                        //二级权限所用的权利
+                        var power = [1, 2];
+                        if (power.indexOf(status) != -1) {
+                            this.getOperatorButton(status);
+                        }
+
+                        break
+                    case 'ROLE_ROLE03':
+                        //三级权限人员所用的权利
+
+                        var power = [3, 4];
+                        if (power.indexOf(status) != -1) {
+
+                            this.getOperatorButton(status);
+                        }
+                        $('#report-current-return').hide();
+                        $('#report-current-btn').hide();
+                        break
+                    case 'ROLE_ROLE04':
+                        //四级权限人员的权利
+                        var power = [2, 4];
+
+                        if (power.indexOf(status) != -1) {
+                            this.getOperatorButton(status);
+                            this.isConfirmAgain = false;
+                            this.isConfirm = false;
+                            this.isEdit = false;
+                        }
+                        $('#report-current-return').hide()
+                        $('#report-current-btn').hide()
+                        break
+                    case 'ROLE_ROLE05':
+                        //五级权限人员的权利
+                        var power = [2];
+                        if (power.indexOf(status) != -1) {
+                            this.getOperatorButton(status);
+                            this.isConfirmAgain = false;
+                            this.isConfirm = false;
+                            this.isEdit = false;
+                        }
+                        $('#report-current-return').hide()
+                        $('#report-current-btn').hide()
+                        break
+
+                }
+                return {
+                    isEdit: this.isEdit,
+                    isDownload: this.isDownload,
+                    isPrint: this.isPrint,
+                    isConfirmAgain: this.isConfirmAgain,
+                    isConfirm: this.isConfirm
+                }
+            },
+            leftOrRightImgMcv(val) {
+                let mcvRightOptions = {}
+                let mcvLeftOptions = {}
+                let mcvRight = this.mcvList.filter((item, index) => {
+                    mcvRightOptions[item.nerveName] = []
+                    return item.handedness == 1;
+                });
+                let mcvLeft = this.mcvList.filter((item, index) => {
+                    mcvLeftOptions[item.nerveName] = []
+                    return item.handedness == 0;
+                })
+
+                for (let attr in mcvRightOptions) {
+                    let ret = mcvRight.filter((item, index) => {
+                        return item.nerveName == attr;
+                    })
+                    mcvRightOptions[attr] = ret;
+                }
+                for (let attr in mcvLeftOptions) {
+                    let ret = mcvLeft.filter((item, index) => {
+                        return item.nerveName == attr;
+                    })
+                    mcvLeftOptions[attr] = ret;
+                }
+                return {
+                    right: mcvRightOptions,
+                    left: mcvLeftOptions
+                }
+            },
+            leftOrRightImgScv(val) {
+                let scvRightOptions = {}
+                let scvLeftOptions = {}
+                let scvRight = this.scvList.filter((item, index) => {
+                    scvRightOptions[item.nerveName] = []
+                    return item.handedness == 1;
+                });
+                let scvLeft = this.scvList.filter((item, index) => {
+                    scvLeftOptions[item.nerveName] = []
+                    return item.handedness == 0;
+                })
+
+                for (let attr in scvRightOptions) {
+                    let ret = scvRight.filter((item, index) => {
+                        return item.nerveName == attr;
+                    })
+                    scvRightOptions[attr] = ret;
+                }
+                for (let attr in scvLeftOptions) {
+                    let ret = scvLeft.filter((item, index) => {
+                        return item.nerveName == attr;
+                    })
+                    scvLeftOptions[attr] = ret;
+                }
+                return {
+                    right: scvRightOptions,
+                    left: scvLeftOptions
+                }
+            },
+
+
+        },
+        methods: {
+            getOperatorButton(status) {
+                if (status != undefined) {
+                    switch (status.toString()) {
+                        case '0':
+                            //未分析
+                            this.isEdit = true;
+                            this.isConfirm = false;
+                            this.isConfirmAgain = false;
+                            this.isDownload = false;
+                            this.isPrint = false;
+                            this.isSubmit = true;
+                            $('#report-current-btn').text('提交审核')
+
+                            break;
+                        case '1':
+                            //未审核
+                            this.isEdit = true;
+                            this.isConfirm = true;
+                            this.isConfirmAgain = false;
+                            this.isDownload = false;
+                            this.isPrint = false;
+                            this.isSubmit = true;
+                            $('#report-current-btn').text('审核完毕')
+                            $('#report-current-return').show();
+                            break;
+                        case '2':
+                            //已审核
+                            this.isEdit = true;
+                            this.isConfirm = false;
+                            this.isConfirmAgain = true;
+                            this.isDownload = true;
+                            this.isPrint = true;
+                            $('#report-current-btn').hide();
+
+                            break;
+                        case '3':
+                            //已退回
+                            this.isEdit = false;
+                            this.isConfirm = false;
+                            this.isConfirmAgain = false;
+                            this.isDownload = false;
+                            this.isPrint = false;
+                            this.isSubmit = false;
+                            $('#report-current-return').hide();
+                            $('#report-current-btn').show().text('提交报告');
+                            break;
+                        case '4':
+                            //未提交
+                            this.isEdit = true;
+                            this.isConfirm = false;
+                            this.isConfirmAgain = false;
+                            this.isDownload = false;
+                            this.isPrint = false;
+                            $('#report-current-return').show()
+
+                            break;
+                    }
+                }
+
+            },
+            //数据格式转换(mcv,scv)
+            turnDataFormat1(type, arr) {
+                arr.forEach((item, index, array) => {
+                    array.forEach((item2, index2) => {
+                        let temp = {}
+                        if (item.handedness != item2.handedness && item.nerveName == item2
+                            .nerveName && item.collectPointPositionName == item2
+                            .collectPointPositionName && item.stimPointPositionName == item2
+                            .stimPointPositionName) {
+                            temp.idLeft = item.id;
+                            temp.idRight = item2.id;
+                            temp.collectPointPositionName = item
+                                .collectPointPositionName;
+                            temp.nerveName = item.nerveName;
+                            temp.stimPointPositionName = item
+                                .stimPointPositionName;
+                            temp.handednessLeft = item.handedness;
+                            temp.handednessRight = item2.handedness;
+                            temp.amplitudeLeft = item.amplitude;
+                            temp.amplitudeRight = item2.amplitude;
+                            temp.latencyPeriodLeft = item.latencyPeriod;
+                            temp.latencyPeriodRight = item2.latencyPeriod;
+                            temp.speedLeft = item.speed;
+                            temp.speedRight = item2.speed;
+
+                            temp.amplitudeNLeft = item.amplitudeN;
+                            temp.amplitudeNRight = item2.amplitudeN
+
+                            temp.amplitudeRLeft = item.amplitudeR;
+                            temp.amplitudeRRight = item2.amplitudeR;
+
+                            temp.amplitudeRangeLLeft = item.amplitudeRangeL;
+                            temp.amplitudeRangeLRight = item2.amplitudeRangeL;
+
+                            temp.amplitudeRangeULeft = item.amplitudeRangeU;
+                            temp.amplitudeRangeURight = item2.amplitudeRangeU;
+
+                            temp.latencyPeriodNLeft = item.latencyPeriodN;
+                            temp.latencyPeriodNRight = item2.latencyPeriodN;
+
+                            temp.latencyPeriodRLeft = item.latencyPeriodR;
+                            temp.latencyPeriodRRight = item2.latencyPeriodR;
+
+                            temp.latencyPeriodRangeLLeft = item.latencyPeriodRangeL;
+                            temp.latencyPeriodRangeLRight = item2.latencyPeriodRangeL;
+
+                            temp.latencyPeriodRangeULeft = item.latencyPeriodRangeU;
+                            temp.latencyPeriodRangeURight = item2.latencyPeriodRangeU;
+
+                            temp.speedNLeft = item.speedN;
+                            temp.speedNRight = item2.speedN;
+
+                            temp.speedRLeft = item.speedR;
+                            temp.speedRRight = item2.speedR;
+
+                            temp.speedRangeLLeft = item.speedRangeL;
+                            temp.speedRangeLRight = item2.speedRangeL;
+
+                            temp.speedRangeULeft = item.speedRangeU;
+                            temp.speedRangeURight = item2.speedRangeU;
+                            array.splice(index2, 1)
+                            if (type == 'mcv') {
+                                this.newMcvList.push(temp)
+                            } else {
+                                this.newScvList.push(temp)
+                            }
+                        }
+                    })
+                })
+
+                if (type == 'mcv') {
+                    if (this.newMcvList.length == 0) {
+                        for (let i = 0; i < arr.length; i++) {
+                            let temp = {}
+                            if (arr[i].handedness == 0) {
+                                temp.idLeft = arr[i].id;
+                                temp.idRight = '';
+                                temp.collectPointPositionName = arr[i].collectPointPositionName;
+                                temp.nerveName = arr[i].nerveName;
+                                temp.stimPointPositionName = arr[i].stimPointPositionName;
+                                temp.handednessLeft = arr[i].handedness;
+                                temp.handednessRight = '';
+                                temp.amplitudeLeft = arr[i].amplitude;
+                                temp.amplitudeRight = '';
+                                temp.latencyPeriodLeft = arr[i].latencyPeriod;
+                                temp.latencyPeriodRight = '';
+                                temp.speedLeft = arr[i].speed;
+                                temp.speedRight = '';
+
+                                temp.amplitudeNLeft = arr[i].amplitudeN;
+                                temp.amplitudeNRight = ''
+                                temp.amplitudeRLeft = arr[i].amplitudeR;
+                                temp.amplitudeRRight = '';
+                                temp.amplitudeRangeLLeft = arr[i].amplitudeRangeL;
+                                temp.amplitudeRangeLRight = '';
+                                temp.amplitudeRangeULeft = arr[i].amplitudeRangeU;
+                                temp.amplitudeRangeURight = '';
+                                temp.latencyPeriodNLeft = arr[i].latencyPeriodN;
+                                temp.latencyPeriodNRight = ''
+                                temp.latencyPeriodRLeft = arr[i].latencyPeriodR;
+                                temp.latencyPeriodRRight = '';
+                                temp.latencyPeriodRangeLLeft = arr[i].latencyPeriodRangeL;
+                                temp.latencyPeriodRangeLRight = '';
+                                temp.latencyPeriodRangeULeft = arr[i].latencyPeriodRangeU;
+                                temp.latencyPeriodRangeURight = '';
+                                temp.speedNLeft = arr[i].speedN;
+                                temp.speedNRight = '';
+                                temp.speedRLeft = arr[i].speedR;
+                                temp.speedRRight = '';
+                                temp.speedRangeLLeft = arr[i].speedRangeL;
+                                temp.speedRangeLRight = '';
+                                temp.speedRangeULeft = arr[i].speedRangeU;
+                                temp.speedRangeURight = '';
+
+                                this.newMcvList.push(temp)
+                            } else {
+                                temp.idLeft = '';
+                                temp.idRight = arr[i].id;
+                                temp.collectPointPositionName = arr[i].collectPointPositionName;
+                                temp.nerveName = arr[i].nerveName;
+                                temp.stimPointPositionName = arr[i].stimPointPositionName;
+                                temp.handednessLeft = '';
+                                temp.handednessRight = arr[i].handedness;
+                                temp.amplitudeLeft = '';
+                                temp.amplitudeRight = arr[i].amplitude;
+                                temp.latencyPeriodLeft = '';
+                                temp.latencyPeriodRight = arr[i].latencyPeriod;
+                                temp.speedLeft = '';
+                                temp.speedRight = arr[i].speed;
+
+                                temp.amplitudeNLeft = '';
+                                temp.amplitudeNRight = arr[i].amplitudeN
+                                temp.amplitudeRLeft = '';
+                                temp.amplitudeRRight = arr[i].amplitudeR;
+                                temp.amplitudeRangeLLeft = ''
+                                temp.amplitudeRangeLRight = arr[i].amplitudeRangeL;
+                                temp.amplitudeRangeULeft = ''
+                                temp.amplitudeRangeURight = arr[i].amplitudeRangeU;
+                                temp.latencyPeriodNLeft = ''
+                                temp.latencyPeriodNRight = arr[i].latencyPeriodN;
+                                temp.latencyPeriodRLeft = ''
+                                temp.latencyPeriodRRight = arr[i].latencyPeriodR;
+                                temp.latencyPeriodRangeLLeft = ''
+                                temp.latencyPeriodRangeLRight = arr[i].latencyPeriodRangeL;
+                                temp.latencyPeriodRangeULeft = ''
+                                temp.latencyPeriodRangeURight = arr[i].latencyPeriodRangeU;
+                                temp.speedNLeft = ''
+                                temp.speedNRight = arr[i].speedN;
+                                temp.speedRLeft = '';
+                                temp.speedRRight = arr[i].speedR;
+                                temp.speedRangeLLeft = '';
+                                temp.speedRangeLRight = arr[i].speedRangeL;
+                                temp.speedRangeULeft = '';
+                                temp.speedRangeURight = arr[i].speedRangeU;
+
+                                this.newMcvList.push(temp)
+                            }
+                        }
+                    }
+                } else {
+                    if (this.newScvList.length == 0) {
+                        for (let i = 0; i < arr.length; i++) {
+                            let temp = {}
+                            if (arr[i].handedness == 0) {
+                                temp.idLeft = arr[i].id;
+                                temp.idRight = '';
+                                temp.collectPointPositionName = arr[i].collectPointPositionName;
+                                temp.nerveName = arr[i].nerveName;
+                                temp.stimPointPositionName = arr[i].stimPointPositionName;
+                                temp.handednessLeft = arr[i].handedness;
+                                temp.handednessRight = '';
+                                temp.amplitudeLeft = arr[i].amplitude;
+                                temp.amplitudeRight = '';
+                                temp.latencyPeriodLeft = arr[i].latencyPeriod;
+                                temp.latencyPeriodRight = '';
+                                temp.speedLeft = arr[i].speed;
+                                temp.speedRight = '';
+
+                                temp.amplitudeNLeft = arr[i].amplitudeN;
+                                temp.amplitudeNRight = ''
+                                temp.amplitudeRLeft = arr[i].amplitudeR;
+                                temp.amplitudeRRight = '';
+                                temp.amplitudeRangeLLeft = arr[i].amplitudeRangeL;
+                                temp.amplitudeRangeLRight = '';
+                                temp.amplitudeRangeULeft = arr[i].amplitudeRangeU;
+                                temp.amplitudeRangeURight = '';
+                                temp.latencyPeriodNLeft = arr[i].latencyPeriodN;
+                                temp.latencyPeriodNRight = ''
+                                temp.latencyPeriodRLeft = arr[i].latencyPeriodR;
+                                temp.latencyPeriodRRight = '';
+                                temp.latencyPeriodRangeLLeft = arr[i].latencyPeriodRangeL;
+                                temp.latencyPeriodRangeLRight = '';
+                                temp.latencyPeriodRangeULeft = arr[i].latencyPeriodRangeU;
+                                temp.latencyPeriodRangeURight = '';
+                                temp.speedNLeft = arr[i].speedN;
+                                temp.speedNRight = '';
+                                temp.speedRLeft = arr[i].speedR;
+                                temp.speedRRight = '';
+                                temp.speedRangeLLeft = arr[i].speedRangeL;
+                                temp.speedRangeLRight = '';
+                                temp.speedRangeULeft = arr[i].speedRangeU;
+                                temp.speedRangeURight = '';
+                                this.newScvList.push(temp)
+                            } else {
+                                temp.idLeft = '';
+                                temp.idRight = arr[i].id;
+                                temp.collectPointPositionName = arr[i].collectPointPositionName;
+                                temp.nerveName = arr[i].nerveName;
+                                temp.stimPointPositionName = arr[i].stimPointPositionName;
+                                temp.handednessLeft = '';
+                                temp.handednessRight = arr[i].handedness;
+                                temp.amplitudeLeft = '';
+                                temp.amplitudeRight = arr[i].amplitude;
+                                temp.latencyPeriodLeft = '';
+                                temp.latencyPeriodRight = arr[i].latencyPeriod;
+                                temp.speedLeft = '';
+                                temp.speedRight = arr[i].speed;
+
+                                temp.amplitudeNLeft = '';
+                                temp.amplitudeNRight = arr[i].amplitudeN
+                                temp.amplitudeRLeft = '';
+                                temp.amplitudeRRight = arr[i].amplitudeR;
+                                temp.amplitudeRangeLLeft = ''
+                                temp.amplitudeRangeLRight = arr[i].amplitudeRangeL;
+                                temp.amplitudeRangeULeft = ''
+                                temp.amplitudeRangeURight = arr[i].amplitudeRangeU;
+                                temp.latencyPeriodNLeft = ''
+                                temp.latencyPeriodNRight = arr[i].latencyPeriodN;
+                                temp.latencyPeriodRLeft = ''
+                                temp.latencyPeriodRRight = arr[i].latencyPeriodR;
+                                temp.latencyPeriodRangeLLeft = ''
+                                temp.latencyPeriodRangeLRight = arr[i].latencyPeriodRangeL;
+                                temp.latencyPeriodRangeULeft = ''
+                                temp.latencyPeriodRangeURight = arr[i].latencyPeriodRangeU;
+                                temp.speedNLeft = ''
+                                temp.speedNRight = arr[i].speedN;
+                                temp.speedRLeft = '';
+                                temp.speedRRight = arr[i].speedR;
+                                temp.speedRangeLLeft = '';
+                                temp.speedRangeLRight = arr[i].speedRangeL;
+                                temp.speedRangeULeft = '';
+                                temp.speedRangeURight = arr[i].speedRangeU;
+                                this.newScvList.push(temp)
+                            }
+                        }
+                    }
+                }
+
+            },
+            //分析的参考值和已经有的数据匹配
+            matchDataByAnalysis(data) {
+                for (let attr of Object.keys(data)) {
+                    if (attr == 'mcv') {
+                        data['mcv'].forEach((item, index) => {
+                            this.mcvList.forEach((mcvItem, indexM) => {
+                                if (item.id == mcvItem.programDataId) {
+                                    Object.assign(item, mcvItem)
+                                }
+                            })
+                        })
+                        this.mcvList = data['mcv']
+                    } else if (attr == 'scv') {
+                        data['scv'].forEach((item, index) => {
+                            this.scvList.forEach((scvItem, indexC) => {
+                                if (item.id == scvItem.programDataId) {
+                                    Object.assign(item, scvItem)
+                                }
+                            })
+                        })
+                        this.scvList = data['scv']
+                    } else if (attr == 'ssr') {
+                        data['ssr'].forEach((item, index) => {
+                            this.ssrList.forEach((ssrItem, indexS) => {
+                                if (item.id == ssrItem.programDataId) {
+                                    Object.assign(item, ssrItem)
+                                }
+                            })
+                        })
+                        this.ssrList = data['ssr']
+                    }
+                }
+                this.turnDataFormat1('mcv', this.mcvList)
+                this.turnDataFormat1('scv', this.scvList)
+            },
+            //根据报告的编号获取报告数据
+            getCurrentReportScore(path) {
+                let options = {}
+                options['mcv'] = [];
+                options['ssr'] = [];
+                options['scv'] = [];
+                this.mcvList.forEach((item, index) => {
+                    options['mcv'].push(item.programDataId)
+                })
+                this.ssrList.forEach((item, index) => {
+                    options['ssr'].push(item.programDataId)
+                })
+                this.scvList.forEach((item, index) => {
+                    options['scv'].push(item.programDataId)
+                })
+                return new Promise((resolve, reject) => {
+                    Shinez.xhr("POST", path, JSON.stringify(options), true, (ret) => {
+                        if (ret.code == 0) {
+                            resolve(ret.data)
+                        } else {
+                            reject(`获取参考值分析错误:${ret.msg}`)
+                        }
+                    }, "json", "application/json")
+                })
+            },
+            //获取报告的数据信息
+            getAsyncReportContent(path) {
+                return new Promise((resolve, reject) => {
+                    Shinez.get(path, (ret) => {
+                        if (ret.code == 0) {
+                            resolve(ret.data)
+                        } else {
+                            reject(ret.msg)
+                        }
+                    })
+                })
+            },
+            changeDataByAdvice() {
+                let ret1 = [];
+                let ret2 = [];
+                let ret3 = [];
+                this.mcvList.forEach((mcvItem, indexM) => {
+                    ret1 = this.advice.filter((item, index) => {
+                        return item.nerveId == mcvItem.nerveId
+                    })
+                });
+                this.scvList.forEach((scvItem, indexs) => {
+
+                    ret2 = this.advice.filter((item, index) => {
+                        return item.nerveId == scvItem.nerveId
+                    })
+                });
+                this.ssrList.forEach((ssrItem, indexr) => {
+
+                    ret3 = this.advice.filter((item, index) => {
+                        return item.nerveId == ssrItem.nerveId
+                    })
+                })
+                if (ret1.length > 0) {
+                    this.diagnoseAdvice['mcv'] = [];
+                    this.getDiagnoseAdvice('mcv', ret1)
+                }
+                if (ret2.length > 0) {
+                    this.diagnoseAdvice['scv'] = [];
+                    this.getDiagnoseAdvice('scv', ret2)
+                }
+                if (ret3.length > 0) {
+                    this.diagnoseAdvice['ssr'] = [];
+                    this.getDiagnoseAdvice('ssr', ret3)
+                }
+            },
+            //遍历数组，匹配nerveId值
+            getDiagnoseAdvice(type, obj) {
+                let tempData = {}
+                switch (type) {
+                    case 'mcv':
+                        tempData['MCV'] = []
+                        obj.forEach((item, index) => {
+                            this.mcvList.forEach((mItem, mIndex) => {
+                                if (item.nerveId == mItem.nerveId) {
+                                    var flag = true;
+                                    for (var j = 0; j < tempData['MCV'].length; j++) {
+                                        if (this.mcvList[j].nerveId == tempData['MCV'][j]
+                                            .nerveId && this.mcvList[j].nerveName == tempData[
+                                                'MCV'][j].nerveName && this.mcvList[j]
+                                            .handedness == tempData['MCV'][j].handedness) {
+                                            flag = false;
+                                        };
+                                    };
+                                    if (flag) {
+                                        let options = {}
+                                        options.nerveId = mItem.nerveId
+                                        options.handedness = mItem.handedness;
+                                        options.nerveName = mItem.nerveName;
+                                        options.projectItem = type;
+                                        options.stimPointPositionName = mItem
+                                            .stimPointPositionName;
+                                        options.collectPointPositionName = mItem
+                                            .collectPointPositionName;
+                                        options.diagnosisTerm = item.diagnosisTerm.trim() ||
+                                            '暂无诊断分析结果';
+                                        tempData['MCV'].push(options)
+                                    };
+                                }
+                            })
+                        })
+                        break;
+                    case 'scv':
+                        tempData['SCV'] = []
+                        obj.forEach((item, index) => {
+                            this.scvList.forEach((sItem, sIndex) => {
+                                if (item.nerveId == sItem.nerveId) {
+                                    var flag = true;
+                                    for (var j = 0; j < tempData['SCV'].length; j++) {
+                                        if (this.scvList[j].nerveId == tempData['SCV'][j]
+                                            .nerveId && this.scvList[j].nerveName == tempData[
+                                                'SCV'][j].nerveName && this.scvList[j]
+                                            .handedness == tempData['SCV'][j].handedness) {
+                                            flag = false;
+                                        };
+                                    };
+                                    if (flag) {
+                                        let options = {}
+                                        options.nerveId = sItem.nerveId
+                                        options.handedness = sItem.handedness || '';
+                                        options.nerveName = sItem.nerveName || '';
+                                        options.projectItem = type;
+                                        options.stimPointPositionName = sItem
+                                            .stimPointPositionName;
+                                        options.collectPointPositionName = sItem
+                                            .collectPointPositionName;
+                                        options.diagnosisTerm = item.diagnosisTerm.trim() ||
+                                            '暂无诊断分析结果';
+                                        tempData['SCV'].push(options)
+                                    };
+                                }
+                            })
+                        })
+                        break;
+                    case 'ssr':
+                        tempData['SSR'] = []
+                        obj.forEach((item, index) => {
+                            this.ssrList.forEach((rItem, rIndex) => {
+                                if (item.nerveId == rItem.nerveId) {
+                                    var flag = true;
+                                    for (var j = 0; j < tempData['SSR'].length; j++) {
+                                        if (this.ssrList[j].nerveId == tempData['SSR'][j]
+                                            .nerveId && this.ssrList[j].nerveName == tempData[
+                                                'SSR'][j].nerveName && this.ssrList[j]
+                                            .handedness == tempData['SSR'][j].handedness) {
+                                            flag = false;
+                                        };
+                                    };
+                                    if (flag) {
+                                        let options = {}
+                                        options.nerveId = rItem.nerveId
+                                        options.handedness = rItem.handedness;
+                                        options.nerveName = rItem.nerveName;
+                                        options.projectItem = type;
+                                        options.stimPointPositionName = rItem
+                                            .stimPointPositionName;
+                                        options.collectPointPositionName = rItem
+                                            .collectPointPositionName;
+                                        options.diagnosisTerm = item.diagnosisTerm.trim() ||
+                                            '暂无诊断分析结果';
+                                        tempData['SSR'].push(options)
+                                    };
+
+                                }
+                            })
+                        })
+                        break;
+                }
+                this.diagnoseAdvice = tempData;
+            },
+            //获取用户信息
+            getCurrentPatient(path) {
+                return new Promise((resolve, reject) => {
+                    Shinez.get(path, {
+                        'pageIndex': 1,
+                        'pageSize': 1,
+                        'id': this.reportData.patientId
+                    }, (ret) => {
+                        if (ret.code == 0) {
+                            if (ret.data.page.list.length > 0) {
+                                resolve(ret.data.page.list[0])
+                            } else {
+                                reject('获得的当前用户信息为空')
+                            }
+                        } else {
+                            reject(`获取用户信息出错${ret.msg}`)
+                        }
+                    })
+                })
+            },
+            //获取查询的报告
+            getAllTableList({
+                ...args
+            }) {
+                return new Promise((resolve, reject) => {
+
+                    Shinez.get(`/check/data`, args, (ret) => {
+                        if (ret.code == 0) {
+                            if (ret.data.page.list.length > 0) {
+                                resolve(ret.data.page.list[0])
+
+                            } else {
+                                reject(`当前报告的数据信息为空`)
+                            }
+                        } else {
+                            reject(`获取清单列表失败了${ret.msg}`)
+                        }
+                    })
+                })
+            },
+            //获取登录时路由的哈希值
+            getHistoryParams() {
+                var queryStr = history.state.params;
+                if (queryStr) {
+                    let params = {}
+                    var paramArray = queryStr.split("&");
+                    var sItems;
+                    for (var i = 0; i < paramArray.length; i++) {
+                        sItems = paramArray[i].split("=");
+                        if (sItems[0]) {
+                            params[sItems[0]] = sItems[1];
+                        }
+                    }
+                    this.pageIndex = params.pageIndex;
+                    this.pageSize = params.pageSize;
+                    this.emgNo = params.emgNo;
+
+                    this.getAllTableList({
+                        'pageIndex': 1,
+                        'pageSize': 1,
+                        'emgNo': this.emgNo
+                    }).then(res => {
+                        this.reportData = res;
+                        this.note = this.reportData.note;
+                        this.doctorNameOperate = res.doctorNameOperate || '-';
+                        this.doctorNameDiagnosis = res.doctorNameDiagnosis || '-';
+                        return this.getCurrentPatient('/basic/patient/')
+                    }).then(data => {
+                        this.patientInfo = data;
+                    }).catch(err => {
+                        Shinez.tip('error', err)
+                    });
+                    this.getAsyncReportContent(`/check/report/${this.emgNo}`).then(data => {
+                            for (let [key, val] of Object.entries(data)) {
+                                if (key.toLowerCase() == 'mcv') {
+                                    this.mcvList = val;
+
+                                }
+                                if (key.toLowerCase() == 'ssr') {
+                                    this.ssrList = val;
+                                }
+                                if (key.toLowerCase() == 'scv') {
+                                    this.scvList = val;
+                                }
+                            }
+                            return this.getCurrentReportScore('/ruler/reference/analysis')
+                        }).then(data => {
+                            this.evaluate = data.evaluate;
+                            //处理获得的分析结果，和已经获得的检查类型匹配
+                            this.matchDataByAnalysis(data)
+                            return this.diagnoseAdviceFnAsync(`/terms/all`)
+                        }).then(dat => {
+                            this.advice = dat;
+                            this.changeDataByAdvice()
+                        })
+                        .catch(err => {
+                            Shinez.tip('error', err)
+                        })
+
+                } else {
+                    Shinez.tip('error', '需要查询的报告不存在')
+                }
+            },
+            //诊断意见方法
+            diagnoseAdviceFnAsync(path) {
+                return new Promise((resolve, reject) => {
+                    Shinez.get(path, (ret) => {
+                        if (ret.length > 0) {
+                            resolve(ret)
+                        } else {
+                            reject(`查询报告的诊断意见出错${ret.msg}`)
+                        }
+                    })
+                })
+            },
+            //计算数值的百分比
+            getCalcPercent(val1, val2) {
+                let ret1 = parseFloat(val1) * 100;
+                let ret2 = parseFloat(val2) * 100;
+                let result = ((ret1 - ret2) / ret2) * 100;
+                result = Math.abs(result).toFixed(2) + '%';
+                if (val1 > val2) {
+                    return '<i class="fa fa-arrow-up" style="margin-right:5px;"></i>' + result
+                } else {
+
+                    return '<i class="fa fa-arrow-down" style="margin-right:5px;"></i>' + result
+                }
+
+            },
+
+            //滚动时置顶的菜单项
+            menuToTopByScroll() {
+                $('.occupy-div').height($('.report-action').height());
+                $('.occupy-div').width('100%');
+                document.addEventListener('scroll', (e) => {
+
+                    var nowTop = $(document).scrollTop()
+                    if (nowTop > 150) {
+                        $('.report-action').css({
+                            position: 'fixed',
+                            top: '50px',
+                            zIndex: 9999,
+                            width: '83%',
+                            height: '50px',
+                            backgroundColor: '#ddd'
+                        });
+                        $('.occupy-div').show();
+                    } else {
+                        $('.report-action').css({
+                            position: 'static',
+                            backgroundColor: '#ffffff',
+                            width: '100%',
+                            height: '50px',
+                        });
+                        $('.occupy-div').hide();
+                    }
+                }, false)
+            },
+            //返回上一级
+            returnBack() {
+                var queryStr = history.state.params;
+                let loadHtmlName = "/checklist/checkform"
+                let state = {}
+                state["html"] = loadHtmlName;
+                state["params"] = queryStr
+                if (location.pathname != sRootName) {
+                    location.href = sRootName + "#" + loadHtmlName;
+                    return;
+                }
+                history.pushState(state, null, null);
+                loadHtml(loadHtmlName)
+            },
+            //显示详细报告
+            showDetailReport() {
+                this.isShowDetail = !this.isShowDetail;
+            },
+            confirmReport(num) {
+                $('#myModal').modal('show')
+                this.num = num;
+            },
+            //编辑报告
+            editReport(num) {
+                this.num = num
+                $('#myModal').modal('show')
+            },
+            cancelEdit() {
+                this.isCancelEdit = false;
+                $('.edit').show()
+            },
+            submitAndSaveEdit() {
+                let result = decodeURI($('#report-edit-data').serialize())
+                let ret = result.split('project=')
+                const list = {}
+                list['mcv'] = []
+                list['scv'] = []
+                list['ssr'] = []
+                ret.forEach((item, index) => {
+                    if (item) {
+                        let newArr = item.split('&')
+                        let name = newArr.splice(0, 1)[0]
+                        if (name == 'mcv') {
+                            let optionsL = {}
+                            let optionsR = {}
+                            newArr.forEach((item2, index2) => {
+                                let arr = item2.split('=')
+                                if (arr[0]) {
+                                    if (arr[0].endsWith('Left')) {
+                                        optionsL[arr[0].replace(/Left$/gi, '')] = arr[1] || ''
+                                    } else if (arr[0].endsWith('Right')) {
+                                        optionsR[arr[0].replace(/Right$/gi, '')] = arr[1] || ''
+                                    } else {
+                                        optionsL[arr[0]] = arr[1] || ''
+                                        optionsR[arr[0]] = arr[1] || ''
+                                    }
+                                }
+                            })
+                            list['mcv'].push(optionsL)
+                            list['mcv'].push(optionsR)
+                        } else if (name == 'scv') {
+                            let optionsL = {}
+                            let optionsR = {}
+                            newArr.forEach((item2, index2) => {
+                                let arr = item2.split('=')
+                                if (arr[0]) {
+                                    if (arr[0].endsWith('Left')) {
+                                        optionsL[arr[0].replace(/Left$/gi, '')] = arr[1] || ''
+                                    } else if (arr[0].endsWith('Right')) {
+                                        optionsR[arr[0].replace(/Right$/gi, '')] = arr[1] || ''
+                                    } else {
+                                        optionsL[arr[0]] = arr[1] || ''
+                                        optionsR[arr[0]] = arr[1] || ''
+                                    }
+                                }
+                            })
+                            list['scv'].push(optionsL)
+                            list['scv'].push(optionsR)
+                        } else if (name == 'ssr') {
+                            let options = {}
+                            newArr.forEach((item2, index2) => {
+                                let arr = item2.split('=')
+                                if (arr[0]) {
+                                    options[arr[0]] = arr[1] || ''
+                                }
+                            })
+                            list['ssr'].push(options)
+                        }
+
+                    }
+                })
+                Shinez.xhr("PUT", '/check/report/content', JSON.stringify(list), true, (ret) => {
+                    if (ret.code == 0) {
+                        Shinez.tip('success', '提交编辑报告成功');
+                        this.isCancelEdit = false;
+                        $('.edit').show();
+                        this.mcvList = []
+                        this.ssrList = []
+                        this.scvList = []
+                        this.newMcvList = [],
+                            this.newScvList = [],
+                            this.getHistoryParams()
+                    } else {
+                        Shinez.tip('error', `编辑报告出错${ret.msg}`)
+                    }
+
+                }, "json", "application/json");
+            },
+            //退回报告
+            takeReportBack() {
+
+                $('#myModal4').modal('show')
+
+            },
+            //提交报告
+            submitReport(num) {
+                if ($('#report-current-btn').text() == '审核完毕' && this.isSubmit) {
+                    return false;
+                } else if ($('#report-current-btn').text() == '审核完毕' && this.isSubmit == false) {
+                    this.num = 6;
+                    $('#myModal').modal('show')
+                } else {
+                    this.num = num;
+                    $('#myModal').modal('show')
+                }
+
+            },
+            //打印报告
+            printReport() {
+                $('#report-container').print({
+                    globalStyles: true,
+                    mediaPrint: false,
+                    noPrintSelector: ".no-print",
+                    iframe: true,
+                    append: null,
+                    prepend: null,
+                    /*deferred: $.Deferred().done(function() { toastr.remove();toastr.info('打印成功了','success')}),*/
+                    title: '打印报告'
+                })
+            },
+            //下载报告
+            downloadReport() {
+                let name = (this.reportData.patientName) + ` —— ${this.isShowDetail?'详细报告':'简单报告'} `
+
+                var $obj = $("#report-container").clone();
+                $obj.find('td[class=advice]').text($('#advice-message').val());
+                $obj.find('.doctor-submit-name').append('<span>' + $('#doctor-submit').val() + '</span>');
+                $obj.find('.doctor-confirm-name').append('<span>' + $('#doctor-confirm').val() + '</span>');
+                $obj.find('#doctor-confirm').remove();
+                $obj.find('#doctor-submit').remove();
+                $obj.find('.report-color-status').remove();
+                $obj.find('#edit-name').remove();
+                $obj.find('#report-current-btn').remove();
+                $obj.find('.report-color-status').remove();
+                $obj.find('#report-current-return').remove();
+                $obj.find('#advice-message').remove();
+                $obj.find('.operate-doctor-name').append();
+                $obj.find('.patient-info').attr('style',
+                    'width:100%; height:30px;line-height:30px; background-color:#dff0d8;');
+
+                var sEleCss = '';
+                $obj.find('.patient-info-list li').each(function (k, v) {
+                    sEleCss += '      ' + $(v).html() + '      '
+                });
+                $obj.find('.patient-info').empty().append(
+                    '<div style="width:80%;line-height:30px; height:30px; margin:0 auto 30px;;text-align:center;">' +
+                    sEleCss + '<div>')
+
+                $obj.find('.report-right-sign').attr('style', 'text-align:right;');
+
+                $obj.find('.report-names h3').attr('style', 'text-align:center; height:50px; line-height:50px;')
+                $obj.find('h3[data-name=institutionName]').attr('style',
+                    'text-align:center; height:50px; line-height:50px;');
+                var rules =
+                    "table{border-collapse:collapse;margin:0 auto;text-align:center;width: 100%;}table caption,table td,table th{border:none;height:40px}table thead th{background-color:#F1F1F1;min-width:400px}table tr{background:#fff}"
+
+
+                $obj.wordExport(name, rules)
+            }
+        },
+        mounted() {
+            this.getHistoryParams();
+            this.menuToTopByScroll()
+        }
+    })
+</script>

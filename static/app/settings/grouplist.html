@@ -1,0 +1,224 @@
+<div id="group">
+    
+    <div class="row">
+        <div class="top-handle-btn">
+            <form id="search-form" action="javascript:;">
+                <select name="pageSize" class="form-control  inline input-small" v-model="pageSize">
+                    <option value="10">10</option>
+                    <option value="20">20</option>
+                    <option value="50">50</option>
+                </select>
+                <input type="text" name="groupName" v-model.trim="groupName" placeholder="群组名称" class="form-control input-small inline">
+                <button class="btn purple right search" @click="searchInfo"><i class="fa fa-search"></i> 查询</button>
+                <a class='btn green radius6' data-roles="ROLE_SUPER"
+                @click="createGroup"><i
+                    class="fa fa-plus"></i> 添加</a>
+            </form>
+        </div>
+    </div>
+    
+    <div class="row">
+        <div class="role-table">
+            <div class="table-refer">
+                <table id="data-table" class="table table-striped table-bordered table-hover refer-table" width="100%">
+                    <thead>
+                        <tr>
+                            <th>序号</th>
+                            <th>组名称</th>
+                            <th>组长</th>
+                            <th>创建时间</th>
+                            <th>群组人数</th>
+                            <th>群组描述</th>
+                            <th>操作</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <template v-if="list.length>0">
+                            <tr v-for="(item,index) in list" :key="index" :data-id="item.id">
+                                <td>{{parseInt(index)+1}}</td>
+                                <td>{{item.groupName||'-'}}</td>
+                                <td>{{getCaptainName(item,item.createDoctorId)}}</td>
+                                <td>{{item.gmtCreate||'-'|datetimeTransform}}</td>
+                                <td>{{item.doctorInfoList.length||'0'}}</td>
+                                <td>{{item.description||'-'}}</td>
+                                <td>
+                                    <button @click="checkOutGroup(item)" class="btn btn-primary btn-sm">查看</button>
+                                    <button @click="delGroup(item)" class="btn btn-danger btn-sm">删除</button>
+                                </td>
+                            </tr>
+                        </template>
+                        <template v-else>
+                            <tr>
+                                <td colspan="7" style="text-align:center" class="text-danger">
+                                    数据不存在,稍后再试
+                                </td>
+                            </tr>
+                        </template>
+                    </tbody>
+                    <tfoot>
+                    </tfoot>
+                </table>
+            </div>
+        </div>
+    </div>
+    
+    
+    <div class="row">
+        <div class="pages-number">
+            <div class="pagination pull-left">
+                <label>Pages<input style="width: 50px;text-align: center;vertical-align: middle; margin-right:10px;margin-left:5px;" type="number" min="1" :max="pages" :value="pageIndex"></label>
+                <button class="btn btn-sm blue">GO</button>&nbsp;&nbsp;&nbsp;</span>共{{total}}条记录,共{{pages}}页</span>
+            </div>
+            <ul id="pageLimit" class="pagination pull-right"></ul>
+        </div>
+    </div>
+    
+</div>
+<script>
+    let group=new Vue({
+        el:'#group',
+        data(){
+            return {
+                pageIndex:1,
+                pageSize:10,
+                total:0,
+                pages:0,
+                navigatePages:8,
+                list:[],
+                groupName:'',
+            }
+        },
+        watch:{
+            list(val){
+                this.$nextTick(()=>{
+                    this.buildPaginator();
+                })
+                return val
+            },
+        },
+        filters:{
+            //日期转换
+            datetimeTransform(val){
+                let date=new Date(val)
+                let years=date.getFullYear()
+                let month=date.getMonth()+1
+                let daily=date.getDay()
+                month=month<10?'0'+month:month;
+                daily=daily<10?'0'+daily:daily;
+                return years+'-'+month+'-'+daily
+            },
+        },
+        methods:{
+            createGroup(){
+                loadHtml('/settings/groupOperator')
+            },
+            getAllGroupList({...args}={}){
+                Shinez.get(`/group?pageIndex=${this.pageIndex}&pageSize=${this.pageSize}`,args,(ret)=>{
+                    if(ret.code==0){
+                        if(ret.data.page.list.length>0){
+                            this.list=ret.data.page.list
+                            this.pages=ret.data.page.pages
+                            this.total=ret.data.page.total
+                        }else{
+                            this.pages=0
+                            this.total=0
+                            this.list=[]
+                        }
+                    }else{
+                        Shinez.tip('error',`获取群组数据失败:${ret.msg}`)
+                    }
+                })
+            },
+            //加载分页
+            buildPaginator(){
+                if(this.pages){
+                    $('#pageLimit').show()
+                    $('#pageLimit').bootstrapPaginator({
+                        bootstrapMajorVersion : 3,
+                        currentPage:this.pageIndex,//设置当前页码
+                        numberOfPages:this.navigatePages,
+                        totalPages: this.pages,//设置总页数.
+                        itemTexts: (type, page, current)=> {
+                            switch (type) {
+                                case "first": return "首页";
+                                case "prev": return "上一页";
+                                case "next": return "下一页";
+                                case "last": return "尾页";
+                                case "page": return page;
+                            }
+                        },
+                        onPageClicked: (event, originalEvent, type, page)=> {
+                                this.pageIndex=page 
+                                this.getAllGroupList()
+                        } 
+                    });
+                }else{
+                    $('#pageLimit').hide()
+                }
+            },
+            //查看组
+            checkOutGroup(item){
+                let loadHtmlName='/settings/groupOperator'
+                let state={}
+                state["html"] = loadHtmlName;
+                state["params"] = 'groupNo='+item.groupNo+'&'+'pageIndex='+this.pageIndex+'&'+'pageSize='+this.pageSize;
+                if (location.pathname != sRootName) {
+                    location.href = sRootName+"#" + loadHtmlName;;
+                    return;
+                }
+                history.pushState(state, null, null);
+                loadHtml(loadHtmlName)
+            },
+            //删除组
+            delGroup(item){
+                let id=item.id;
+                Shinez.del(`/group/${id}`,(ret)=>{
+                    if(ret.code==0){
+                        Shinez.tip('success','当前组删除成功')
+                        this.getAllGroupList()
+                    }else{
+                        Shinez.tip('error',`删除时出错了,${ret.msg}`)
+                    }
+                })
+            },
+            //查询 
+            searchInfo(){ 
+                let options={groupName:this.groupName}
+                this.getAllGroupList(options)
+            },
+            //获取组长名称
+            getCaptainName(item,sid){
+                let result=item.doctorInfoList.find((data,index)=>{
+                    return data.id==sid
+                });
+                if(result){
+                    return result.doctorName||'-'
+                }
+                
+            },
+            loadPageOperator(){
+                let Params={}
+                var queryStr=history.state.params;
+                var paramArray = queryStr.split("&");
+                var sItems;
+                for (var i = 0; i < paramArray.length;i++) {
+                    sItems = paramArray[i].split("=");
+                    if(sItems[0]){
+                        Params[sItems[0]] = sItems[1];
+                    }
+                }
+                if(Object.keys(Params).length>0){
+                    this.pageIndex=Params.pageIndex;
+                    this.pageSize=Params.pageSize;
+                    this.getAllGroupList()
+                }else{
+                    this.getAllGroupList();
+                }
+            }
+        },
+        mounted(){
+            this.loadPageOperator()
+            
+        }
+    })
+</script>

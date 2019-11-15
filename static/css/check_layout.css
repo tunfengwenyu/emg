@@ -1,0 +1,280 @@
+.search-box,.shortcuts{
+    padding:0 15px;
+}
+.col-choose{
+    padding:0 15px 15px 15px;
+    position:relative;
+}
+.name-col{
+    list-style:none;
+    border:1px solid #ddd;
+    position:absolute;
+    right:15px;
+    top:36px;
+    background-color:#fff;
+    z-index:9999;
+    padding:0;
+    -webkit-box-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+    -moz-box-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+    box-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+}
+.hide-ele{
+    display:none;
+}
+
+.name-col li:focus,
+.name-col li:hover{
+    background-color:#4B8DF8;
+}
+.name-col li label{
+    padding:5px 20px;
+    width:100%;
+    display:inline-block;
+
+    margin:0;
+}
+.name-col li input[type=checkbox]{
+    vertical-align:middle;
+    margin:0 10px 0 0;
+}
+.search-box{
+    margin-bottom:30px;
+}
+
+.shortcuts .check-btn{
+    font-size:0;
+    margin-top:2px;
+    margin-left:3px;
+}
+.shortcuts a{
+    margin:0 5px;
+}
+.search-box th{
+    background-color:#35AA47;
+    height:50px;
+    vertical-align:middle !important;
+    color:#fff;
+}
+.search-box .table-bordered, .search-box .table-bordered > tbody > tr > td {
+    border-color:#77E588;
+}
+
+.search-box table{
+    width:100%;
+    min-height:150px;
+}
+.table .btn{
+    margin:0;
+}
+.global-search{
+    background-color:#77E588;
+}
+.global-search:active{
+    background-color:#35AA47;
+}
+.shortcuts{
+    width:100%;
+    margin-bottom:30px;
+    margin-top:30px;
+}
+
+.menu-choice{
+    min-width:110px;
+}
+.menu-choice:before{
+    border:none !important;
+}
+.menu-choice:after{
+    border:none !important;
+}
+
+.table-checklist{
+    width:75%;
+    overflow:hidden;
+    border:1px solid #B4CEF8 !important;
+    margin-left:1%;
+    min-height:400px;
+    position:relative;
+}
+#data-table tr, #data-table td, #data-table th{
+    border-color:#ddd !important;
+}
+#data-table th{
+    background-color:#4B8DF8 !important;
+    color:#fff !important;
+    vertical-align:middle !important;
+
+}
+.table-checklist th span{
+    cursor:pointer;
+}
+.table-checklist th i{
+    margin-left:5px;
+}
+.table-checklist td{
+    padding:0;
+    height:50px;
+}
+.table{
+    margin-bottom:0;
+}
+.sick-list{
+    max-width:1600px;
+    position:absolute;
+    left:0;
+    top:0;
+    z-index:0;
+}
+.sick-list th{
+    height:50px;
+}
+.status-item{
+    border:none;
+    background-color:rgba(255,255,255,0);
+    padding:0;
+}
+.status-item option{
+    background-color:#fff;
+    color:#666;
+}
+.status{
+    padding:2px 4px;
+    font-size:10px;
+    display:inline-block;
+    color:#ffffff;
+}
+span[data-status="0"]{
+    background-color:#81C5F0;
+}
+span[data-status="1"]{
+    background-color: #ff6c72;
+}
+span[data-status="2"]{
+    background-color:#43B8B2;
+}
+span[data-status="3"]{
+    background-color:gray;
+}
+span[data-status="4"]{
+    background-color: #F7B64E;
+}
+.action-item{
+    border:none !important;
+    background-color:rgba(255,255,255,0);
+}
+.action-item option{
+    background-color:#fff;
+    color:#666;
+}
+.sick-list td input[type='checkbox']{
+    margin-left:20px;
+}
+
+.curr-text{
+    width:21.5%;
+    margin-right:1%;
+}
+.check-items, .check-result{
+    width:100%;
+    min-height:150px ;
+    border:1px solid #e7ecf1;
+    overflow:auto;
+}
+.check-items h5, .check-result h5{
+    font-weight:bold;
+    color:#666;
+    background-color:#DDDDDD;
+    padding:10px 0;
+    margin:0;
+    text-align:center;
+}
+.items-names dt{
+    text-indent:10%;
+    line-height:40px;
+    background-color:#F5F5F5;
+    color:#852B99;
+}
+.items-names dd{
+   text-align:center;
+    line-height:40px;
+}
+.items-names dd span{
+    font-size:12px;
+}
+
+.items-names{
+    margin:0;
+}
+.pages-number{
+    padding:0 15px;
+    margin-top:15px;
+}
+
+.self-modal{
+    width:100%;
+    border:1px solid #e7ecf1;
+    height:50px;
+}
+.self-modal label{
+    width:50%;
+    text-align:center;
+    line-height:50px;
+    display:inline-block;
+}
+
+.pwd-text{
+    padding-bottom:20px;
+}
+
+.return-text{
+    float:none;
+}
+.submit-choose label{
+    line-height:34px;
+    text-align:right;
+}
+
+.mt-checkbox > span, .mt-radio > span{
+    border:1px solid #ccc;
+    background-color:#f5f5f5;
+}
+.mt-checkbox, .mt-radio{
+    padding-left:18px;
+}
+
+#data-table tr {
+    border:none !important;
+}
+
+.scroll-left-bar{
+    position:absolute;
+    right:5px;
+    width:10px;
+    border-radius:5px;
+    background-color:rgba(0,0,0,0.6);
+    height:100px;
+    z-index:10;
+    cursor:pointer;
+}
+
+.scroll-horizontal-bar{
+    width:75%;
+    height:3px;
+    background-color:rgba(0,0,0,0.5);
+    margin-left:1%;
+    border-radius:5px;
+    position: relative;
+}
+.scroll-bar{
+    position: absolute;
+    width:300px;
+    height:11px;
+    background-color:gray;
+    left:0;
+    top:-4px;
+    border-radius:9px;
+
+}
+.result-show{
+    padding:10px;
+}
