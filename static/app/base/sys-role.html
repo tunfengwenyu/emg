@@ -62,7 +62,7 @@
                                 </td>
                             </tr>
                             <tr>
-                                <th>角色编号</th>
+                                <th>角色权限</th>
                                 <td>
                                     <input type="text"class=" input-medium form-control inline " name="roleCode" maxlength="16" value="">
                                     <span class="required-star">* </span>
@@ -102,10 +102,16 @@
                                 </td>
                             </tr>
                             <tr>
-                                <th>角色编号</th>
+                                <th>角色权限</th>
                                 <td>
                                     <input type="text" class=" input-medium form-control inline "name="roleCode" disabled readonly maxlength="16" value="">
                                     <span class="required-star">* </span>
+                                </td>
+                            </tr>
+                            <tr>
+                                <th>权限说明</th>
+                                <td>
+                                    <span class="auth-explain"></span>
                                 </td>
                             </tr>
                         </table>
@@ -171,7 +177,7 @@
             modal: "modals",//模态框div
             columns: [//列对应的字段数组，注意顺序
                 {data: "roleName"},
-                {data: "roleCode",},
+                {data: "roleCode",replaceFn:'turn2Text'},
             ],
             options: [//操作区域(id)
                 {
@@ -181,6 +187,7 @@
                     edit: true,
                     editMain: true,
                     url: resource,
+                    pre: "checkDataRole"
                 },
                 {
                     title: "编辑权限菜单",
@@ -260,5 +267,44 @@
                 Shinez.tip("error", ret.msg);
             }
         });
+    }
+
+    function turn2Text(val){
+        switch(val){
+            case "ROLE02":
+                return "二级权限";
+            case "ROLE03":
+                return "三级权限";
+            case "ROLE04":
+                return "四级权限";
+            case "ROLE05":
+                return "五级权限";
+            default:
+                return "-"
+        }
+    }
+    function checkDataRole(val){
+        var sRoleCode = ''
+        //读取神经名字改变控件的当前项
+        $('#data-table tbody tr').each(function (index, item) {
+            if ($(item).attr('data-id') == val) {
+                sRoleCode = $(item).find('td[data-name=roleCode]').text()
+            }
+        });
+        $('#modal-edit').find('input[name=roleCode]').val(sRoleCode)
+        switch(sRoleCode){
+            case '二级权限':
+                $('#modal-edit').find('.auth-explain').html('上传详细报告、下载详细报告、编辑正式报告、审核正式报告、反馈正式报告、浏览正式报告、复制本人审核过的正式报告。')
+                break;
+            case "三级权限":
+                $('#modal-edit').find('.auth-explain').html('上传详细报告、浏览正式报告、复制正式报告')
+                break;
+            case '四级权限':
+                $('#modal-edit').find('.auth-explain').html('上传详细报告、下载详细报告、编辑正式报告、浏览正式报告。\n')
+                break;
+            case "五级权限":
+                $('#modal-edit').find('.auth-explain').html('浏览正式报告。')
+                break;
+        }
     }
 </script>

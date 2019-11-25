@@ -1,20 +1,27 @@
 <div id="groupOperator">
     <div class="row" style="padding:0 1%;">
         <button class="btn btn-sm purple right radius6" @click="returnBack"><i
-                class="fa fa-mail-reply"></i>返回上一级</button>
+                class="fa fa-mail-reply"></i>返回上一级
+        </button>
         <div class="group">
             <label>群组名称:</label>
-            <input :readonly="!isRole1" type="text" name="groupName" class="form-control inline" style="width:300px;" v-model="groupName">
+            <input :readonly="!isRole1" type="text" name="groupName" class="form-control inline" style="width:300px;"
+                   v-model="groupName">
         </div>
         <div class="group">
             <label>组长:</label>
-            <input type="text" name="groupCreator" class="form-control inline" style="width:300px;"
-                v-model="groupCreator" readonly>
+            <select class="form-control inline" style="width:300px;" name="chooseCreator" v-model="createDoctorId"
+                    @change="changeCreatorById">
+                <template v-if="doctorInGroup.length>0">
+                    <option v-for="(item,index) in doctorInGroup" :key="index" :value="item.id">{{item.doctorName}}
+                    </option>
+                </template>
+            </select>
         </div>
         <div class="group" style="border-bottom:none;padding-bottom:0;">
             <label>群组成员选择:</label>
             <select name="doctorName" id="doctorName" class="form-control inline"
-                style="width:240px; vertical-align: middle;" v-model="doctorName">
+                    style="width:240px; vertical-align: middle;" v-model="doctorName">
                 <option value="">-- 请选择 --</option>
                 <template v-for="(item,index) in doctorinfo">
                     <option :value="item.doctorName" v-if="item.doctorName!=groupCreator">{{item.doctorName}}</option>
@@ -27,79 +34,90 @@
             <label>现有群成员:</label>
             <table class="table table-bordered table-hover table-striped">
                 <thead>
-                    <tr>
-                        <th>医师姓名</th>
-                        <th>角色</th>
-                        <th>操作</th>
-                    </tr>
+                <tr>
+                    <th>医师姓名</th>
+                    <th>角色</th>
+                    <th>操作</th>
+                </tr>
                 </thead>
                 <tbody>
-                    <template v-if="doctorInGroup.length>0">
-                        <tr v-for="(item,index) in doctorInGroup" :key="index">
-                            <td>{{item.doctorName}}</td>
-                            <td>
-                                <select class="form-control inline" :disabled="item.doctorName==groupCreator && !isRole1"
+                <template v-if="doctorInGroup.length>0">
+                    <tr v-for="(item,index) in doctorInGroup" :key="index">
+                        <td>{{item.doctorName}}</td>
+                        <td>
+                            <select v-if="item.roleId!=1" class="form-control inline"
+                                    :disabled="item.doctorName==groupCreator && !isRole1"
                                     style="width:240px;" ref="roleId" :value="item.roleId||'16'"
-                                    @change="addDoctorInfoRoleId(index,item)">
-                                    <option v-for="(role,index) in roleList" :key="index" :value="role.id">
-                                        {{role.roleName}}</option>
-                                </select>
-                            </td>
-                            <td><button class="btn btn-sm btn-danger" @click="removeCurrentItem(doctorInGroup,index)"
-                                    v-if="item.doctorName!=groupCreator && isRole1">移除</button></td>
-                        </tr>
-                    </template>
-                    <template v-else>
-                        <tr>
-                            <td colspan="3" class="text-primary" style="text-align: center;">请添加群成员</td>
-                        </tr>
-                    </template>
+                                    @change="addDoctorInfoRoleId($event,index)">
+                                <option v-for="(role,index) in roleList" :key="index" :value="role.id">
+                                    {{role.roleName}}
+                                </option>
+                            </select>
+                        </td>
+                        <td>
+                            <button class="btn btn-sm btn-danger" @click="removeCurrentItem(doctorInGroup,index)"
+                                    v-if="item.doctorName!=groupCreator && isRole1 && item.roleId!=1">移除
+                            </button>
+                        </td>
+                    </tr>
+                </template>
+                <template v-else>
+                    <tr>
+                        <td colspan="3" class="text-primary" style="text-align: center;">请添加群成员</td>
+                    </tr>
+                </template>
                 </tbody>
             </table>
         </div>
         <div class="group">
             <label>群的主要功能描述信息:</label><br>
             <textarea name="description" id="description" style="resize:none;" class="form-control" rows="5"
-                v-model="description" :readonly="!isRole1"></textarea>
+                      v-model="description" :readonly="!isRole1"></textarea>
         </div>
         <div class="group">
-            <label>群组中的报告集</label> <button v-if="isRole1" class="btn btn-info btn-sm" data-toggle="modal" data-target="#myModal"
-                @click="getAllCheckList">添加报告</button>
+            <label>群组中的报告集</label>
+            <button v-if="isRole1" class="btn btn-info btn-sm" data-toggle="modal" data-target="#myModal"
+                    @click="getAllCheckList">添加报告
+            </button>
             <table class="table table-bordered table-hover table-striped">
                 <thead>
-                    <tr>
-                        <th>序号</th>
-                        <th>肌电图号</th>
-                        <th>操作</th>
-                    </tr>
+                <tr>
+                    <th>序号</th>
+                    <th>肌电图号</th>
+                    <th>操作</th>
+                </tr>
                 </thead>
                 <tbody>
-                    <template v-if="reportList.length>0">
-                        <tr v-for="(item,index) in reportList" :key="index">
-                            <td>{{parseInt(index)+1}}</td>
-                            <td>
-                                {{item.emgNo}}
-                            </td>
-                            <td><button v-if="isRole1" class="btn btn-sm btn-danger"
-                                    @click="removeCurrentItem(reportList,index)">移除</button></td>
-                        </tr>
-                    </template>
-                    <template v-else>
-                        <tr>
-                            <td colspan="3" class="text-primary" style="text-align: center;">请添加报告</td>
-                        </tr>
-                    </template>
+                <template v-if="reportList.length>0">
+                    <tr v-for="(item,index) in reportList" :key="index">
+                        <td>{{parseInt(index)+1}}</td>
+                        <td>
+                            {{item.emgNo}}
+                        </td>
+                        <td>
+                            <button v-if="isRole1" class="btn btn-sm btn-danger"
+                                    @click="removeCurrentItem(reportList,index)">移除
+                            </button>
+                        </td>
+                    </tr>
+                </template>
+                <template v-else>
+                    <tr>
+                        <td colspan="3" class="text-primary" style="text-align: center;">请添加报告</td>
+                    </tr>
+                </template>
                 </tbody>
             </table>
         </div>
         <div class="group" style="border-bottom:none;" v-if="isRole1">
             <button class="btn  btn-success" @click="saveDataToStore">保存</button>&nbsp;&nbsp;&nbsp;&nbsp;<button
-                class="btn  btn-default" @click="returnBack">取消</button>
+                class="btn  btn-default" @click="returnBack">取消
+        </button>
         </div>
     </div>
     <div class="row">
         <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
-            aria-hidden="true">
+             aria-hidden="true">
             <div class="modal-dialog">
                 <div class="modal-content">
                     <div class="modal-header">
@@ -109,41 +127,41 @@
                     <div class="modal-body">
                         <table class="table table-bordered table-hover table-striped">
                             <thead>
-                                <tr>
-                                    <th></th>
-                                    <th>肌电图号</th>
-                                    <th>医师姓名</th>
-                                    <th>医院名称</th>
-                                    <th>患者名称</th>
-                                </tr>
+                            <tr>
+                                <th></th>
+                                <th>肌电图号</th>
+                                <th>医师姓名</th>
+                                <th>医院名称</th>
+                                <th>患者名称</th>
+                            </tr>
                             </thead>
                             <tbody>
-                                <template v-if="totalReportList.length>0">
-                                    <tr v-for="(item,index) in totalReportList" :key="index">
-                                        <td>
-                                            <label><input v-model="signalChoose" type="checkbox" :value="item.emgNo"
-                                                    name="chooseItem"
-                                                    style="vertical-align:top;">{{parseInt(index)+1}}</label>
-                                        </td>
-                                        <td>
-                                            {{item.emgNo||'-'}}
-                                        </td>
-                                        <td>
-                                            {{item.doctorNameOperate||'-'}}
-                                        </td>
-                                        <td>
-                                            {{item.institutionName||'-'}}
-                                        </td>
-                                        <td>
-                                            {{item.patientName||'-'}}
-                                        </td>
-                                    </tr>
-                                </template>
-                                <template v-else>
-                                    <tr>
-                                        <td colspan="5" class="text-primary" style="text-align: center;">请求报告出错了</td>
-                                    </tr>
-                                </template>
+                            <template v-if="totalReportList.length>0">
+                                <tr v-for="(item,index) in totalReportList" :key="index">
+                                    <td>
+                                        <label><input v-model="signalChoose" type="checkbox" :value="item.emgNo"
+                                                      name="chooseItem"
+                                                      style="vertical-align:top;">{{parseInt(index)+1}}</label>
+                                    </td>
+                                    <td>
+                                        {{item.emgNo||'-'}}
+                                    </td>
+                                    <td>
+                                        {{item.doctorNameOperate||'-'}}
+                                    </td>
+                                    <td>
+                                        {{item.institutionName||'-'}}
+                                    </td>
+                                    <td>
+                                        {{item.patientName||'-'}}
+                                    </td>
+                                </tr>
+                            </template>
+                            <template v-else>
+                                <tr>
+                                    <td colspan="5" class="text-primary" style="text-align: center;">请求报告出错了</td>
+                                </tr>
+                            </template>
                             </tbody>
                         </table>
                         <div class="clearfix">
@@ -188,11 +206,9 @@
                 signalChoose: [],
                 createDoctorId: 0,
                 groupNo: '',
-                /* pageIndex:1,
-                pageSize:10, */
                 id: 0,
                 reportTotalList: [],
-                isRole1:true,
+                isRole1: true,
             }
         },
         watch: {
@@ -202,7 +218,7 @@
                 })
             },
             signalChoose(val) {
-                this.reportList=[]
+                this.reportList = []
                 val.forEach((item, index) => {
                     Shinez.get(
                         `/check/data?pageIndex=1&pageSize=1&emgNo=${item}`,
@@ -238,8 +254,8 @@
                 })
             },
             //在doctorInforList中加入RoleId的制度
-            addDoctorInfoRoleId(index, item) {
-                this.doctorInGroup[index].roleId = this.$refs.roleId[index].value
+            addDoctorInfoRoleId(ev,index) {
+                this.doctorInGroup[index].roleId = parseInt(ev.target.value)
             },
             //加入群
             joinGroup() {
@@ -257,9 +273,11 @@
                 let loadHtmlName = '/settings/grouplist'
                 let state = {}
                 state["html"] = loadHtmlName;
-                state["params"] = history.state.params;;
+                state["params"] = history.state.params;
+                ;
                 if (location.pathname != sRootName) {
-                    location.href = sRootName + "#" + loadHtmlName;;
+                    location.href = sRootName + "#" + loadHtmlName;
+                    ;
                     return;
                 }
                 history.pushState(state, null, null);
@@ -320,6 +338,7 @@
                         let newParam = Object.assign({}, params, {
                             'id': this.id
                         })
+
                         Shinez.put('/group', newParam, (ret) => {
                             if (ret.code == 0) {
                                 Shinez.tip('success', '编辑成功')
@@ -348,35 +367,7 @@
 
 
             },
-            //获取档期的组长
-            getCurrentCreateCaptain() {
-                //获取所有的有组长权限的id
-                Shinez.get('/group/all', (ret) => {
-                    if (ret) {
-                        let aCaptain = []
-                        ret.forEach((item, index) => {
-                            let createId = item.createDoctorId;
-                            item.doctorInfoList.forEach((doctor, inum) => {
-                                if (doctor.id == createId) {
-                                    aCaptain.push(doctor)
-                                }
-                            })
-                        });
-                        let result = aCaptain.find((item, index) => {
-                            return item.institutionNo == JSON.parse(sessionStorage.doctorInfo).institutionNo
-                        })
-                        if (result) {
-                            this.groupCreator = result.doctorName;
-                            this.createDoctorId = result.id;
-                            if(this.doctorInGroup.length==0){
-                                this.doctorInGroup.push(result)
-                            }
-                        }
-                    } else {
-                        Shinez.tip('error', '获取组长信息错误')
-                    }
-                })
-            },
+
             //添加报告集
             getAllCheckList() {
                 $('#myModal').modal('show')
@@ -450,6 +441,7 @@
                         }, (ret) => {
                             if (ret.code == 0) {
                                 if (ret.data.page.list.length > 0) {
+                                    this.createDoctorId = ret.data.page.list[0].createDoctorId
                                     this.reportList = ret.data.page.list[0].checkdataInfoList;
                                     this.reportList.forEach((item, index) => {
                                         this.signalChoose.push(item.emgNo)
@@ -470,13 +462,27 @@
             },
 
             //检查权限
-            checkOutAuthority(){
-                let userRole=JSON.parse(localStorage.authorities)[1].roleCode;
-                if((/role1/gi).test(userRole)){
-                    this.isRole1=true
-                }else{
-                    this.isRole1=false;
+            checkOutAuthority() {
+                let userRole = JSON.parse(localStorage.authorities)[1].roleCode;
+                if ((/role1/gi).test(userRole)) {
+                    this.isRole1 = true
+                } else {
+                    this.isRole1 = false;
                 }
+            },
+            //选择群组组长时，对应的roleId也要改变
+            changeCreatorById() {
+                let result=this.doctorInGroup.findIndex((item,index)=>{
+                    return item.roleId==1
+                });
+
+                this.doctorInGroup[result].roleId=16;
+                this.doctorInGroup.forEach((item, index, array) => {
+                    if (item.id == this.createDoctorId) {
+                        item.roleId = 1
+                    }
+
+                })
             }
         },
         mounted() {
@@ -484,7 +490,6 @@
             this.loadOperatorPage();
             this.getAllDoctorInfo()
             this.getRoleName();
-            this.getCurrentCreateCaptain()
         }
     })
 </script>
