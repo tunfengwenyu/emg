@@ -298,7 +298,6 @@
                 let loadHtmlName = "/checklist/simpleReport"
                 let state = {}
                 state["html"] = loadHtmlName;
-                /* state["params"] = 'patientName='+item.patientName+'&'+'patientId='+item.patientId+'&'+'hospitalNo='+item.hospitalNo+'&'+'attachment='+item.attachment+'&'+'bedNo='+item.bedNo+'&'+'checkDate='+item.checkDate+'&'+'doctorNameDiagnosis='+item.doctorNameDiagnosis+'&'+'doctorNameOperate='+item.doctorNameOperate+'&'+'eegDiagnosis='+item.eegDiagnosis+'&'+'emgNo='+item.emgNo+'&'+'institutionName='+item.institutionName+'&'+'note='+item.note+'&'+'reportStatus='+item.reportStatus+'&'+'pageIndex='+this.pageNum+'&'+'pageSize='+this.pageSize+'&'+'checkGroup='+this.checkGroup; */
                 state["params"] = 'emgNo=' + item.emgNo + '&' + 'pageIndex=' + this.pageNum + '&' +
                     'pageSize=' + this.pageSize + '&' + 'checkGroup=' + this.checkGroup + '&' +
                     'reportStatus=' + this.reportStatus + '&' + 'patientName=' + this.patientName;

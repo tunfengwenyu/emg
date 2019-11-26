@@ -11,7 +11,7 @@
         <div class="group">
             <label>组长:</label>
             <select class="form-control inline" style="width:300px;" name="chooseCreator" v-model="createDoctorId"
-                    @change="changeCreatorById">
+                    @change="changeCreatorById($event)" @focus="alertChangeCreatorWin($event)">
                 <template v-if="doctorInGroup.length>0">
                     <option v-for="(item,index) in doctorInGroup" :key="index" :value="item.id">{{item.doctorName}}
                     </option>
@@ -53,6 +53,7 @@
                                     {{role.roleName}}
                                 </option>
                             </select>
+                            <input v-else readonly class="form-control inline" style="width:240px;" value="项目负责人">
                         </td>
                         <td>
                             <button class="btn btn-sm btn-danger" @click="removeCurrentItem(doctorInGroup,index)"
@@ -177,14 +178,73 @@
                         <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
                         <button type="button" @click="chooseOver" class="btn btn-primary">确定</button>
                     </div>
-                </div><!-- /.modal-content -->
-            </div><!-- /.modal -->
+                </div>
+            </div>
         </div>
+    </div>
+
+    <div class="row">
+        <authority :subold="oldId" :subnew="newId"></authority>
     </div>
 </div>
 
 <script>
-    new Vue({
+    Vue.component('authority', {
+        props:['subold','subnew'],
+        filters:{
+            newDoctorName(val){
+                if(val){
+                    if(groupOperator!=undefined){
+                        let curDocInfo=groupOperator.doctorInGroup.find((item,index)=>{
+                            return item.id==val;
+                        });
+                        return curDocInfo.doctorName
+                    }
+                }
+
+            }
+        },
+        methods:{
+            surePassAuth(){
+                let result = groupOperator.doctorInGroup.findIndex((item, index) => {
+                    return item.roleId == 1
+                });
+
+                groupOperator.doctorInGroup[result].roleId = 16;
+                groupOperator.doctorInGroup.forEach((item, index, array) => {
+                    if (item.id == groupOperator.createDoctorId) {
+                        item.roleId = 1
+                    }
+
+                })
+                $('#passAuth').modal('hide');
+            },
+            cancelPassAuth(){
+
+                $('#passAuth').on('hide.bs.modal',()=>{
+                    groupOperator.createDoctorId=this.subold;
+                })
+            }
+        },
+        template: `
+            <div class="modal fade" id="passAuth" tabindex="-1" role="dialog" aria-labelledby="passAuthLabel" aria-hidden="true" data-backdrop='static'>
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                <h4 class="modal-title" id="passAuthLabel">设置群组组长</h4>
+            </div>
+            <div class="modal-body">确定将【{{subnew|newDoctorName}}】设为组长吗?</div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal" @click="cancelPassAuth">取消</button>
+                <button type="button" class="btn btn-primary" @click="surePassAuth">确定</button>
+            </div>
+        </div>
+            </div>
+            </div>
+        `
+    });
+    var groupOperator=new Vue({
         el: '#groupOperator',
         data() {
             return {
@@ -209,6 +269,8 @@
                 id: 0,
                 reportTotalList: [],
                 isRole1: true,
+                oldId: '',
+                newId: '',
             }
         },
         watch: {
@@ -254,7 +316,7 @@
                 })
             },
             //在doctorInforList中加入RoleId的制度
-            addDoctorInfoRoleId(ev,index) {
+            addDoctorInfoRoleId(ev, index) {
                 this.doctorInGroup[index].roleId = parseInt(ev.target.value)
             },
             //加入群
@@ -470,19 +532,31 @@
                     this.isRole1 = false;
                 }
             },
+            //onblur时弹出确定变更组长的弹窗
+            alertChangeCreatorWin(ev) {
+                this.oldId = parseInt(ev.target.value)
+            },
             //选择群组组长时，对应的roleId也要改变
-            changeCreatorById() {
-                let result=this.doctorInGroup.findIndex((item,index)=>{
-                    return item.roleId==1
+            changeCreatorById(ev) {
+                this.newId=parseInt(ev.target.value)
+                $("#passAuth").modal({
+                    backdrop: 'static',
+                    //点击背景空白处不被关闭；
+                    keyboard: false
+                    //触发键盘esc事件时不关闭。
+                })
+                $('#passAuth').modal('show');
+                /*let result = this.doctorInGroup.findIndex((item, index) => {
+                    return item.roleId == 1
                 });
 
-                this.doctorInGroup[result].roleId=16;
+                this.doctorInGroup[result].roleId = 16;
                 this.doctorInGroup.forEach((item, index, array) => {
                     if (item.id == this.createDoctorId) {
                         item.roleId = 1
                     }
 
-                })
+                })*/
             }
         },
         mounted() {
@@ -492,4 +566,6 @@
             this.getRoleName();
         }
     })
+
+
 </script>
