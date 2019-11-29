@@ -11,28 +11,28 @@
             <span class="report-general">
                 <a href="javascript:;" class="btn btn-default" @click="returnBack">返回</a>
                 <a href="javascript:;" class="btn btn-default "
-                    @click="showDetailReport">{{isShowDetail?'简单报告':'详细报告'}}</a>
+                   @click="showDetailReport">{{isShowDetail?'简单报告':'详细报告'}}</a>
             </span>
             <span class="report-actual">
 
                 <a v-if="listenAuthorityAndReportStatus.isConfirm" href="javascript:;" class="btn btn-default confirm"
-                    @click="confirmReport(2)">审核报告</a>
+                   @click="confirmReport(2)">审核报告</a>
                 <a v-if="listenAuthorityAndReportStatus.isConfirmAgain" href="javascript:;"
-                    class="btn btn-warning confirm" @click="confirmReport(2)">重新审核报告</a>
+                   class="btn btn-warning confirm" @click="confirmReport(2)">重新审核报告</a>
                 <a v-if="listenAuthorityAndReportStatus.isPrint" href="javascript:;" class="btn btn-default prints"
-                    @click="printReport()">打印</a>
+                   @click="printReport()">打印</a>
                 <a v-if="listenAuthorityAndReportStatus.isDownload" href="javascript:;" class="btn btn-success download"
-                    @click="downloadReport()">下载报告</a>
+                   @click="downloadReport()">下载报告</a>
                 <a v-if="listenAuthorityAndReportStatus.isEdit" href="javascript:;" class="btn btn-default edit"
-                    @click="editReport(3)">编辑报告</a>
+                   @click="editReport(3)">编辑报告</a>
                 <a class="btn btn-danger cancle-edit-refer" id="cancel-edit" style="margin-right:10px;"
-                    @click="cancelEdit()" v-if="isCancelEdit">取消编辑</a>
+                   @click="cancelEdit()" v-if="isCancelEdit">取消编辑</a>
                 <a class="btn btn-primary" id="submit-edit" v-if="isCancelEdit" @click="submitAndSaveEdit()">保存编辑</a>
 
                 <a v-if="!isCancelEdit" :disabled="isDrawBack" class="btn btn-danger pull-right"
-                    id="report-current-return" type="button" @click="takeReportBack">退回报告</a>
+                   id="report-current-return" type="button" @click="takeReportBack">退回报告</a>
                 <a :disabled="isSubmit" class="btn btn-primary pull-right" id="report-current-btn" type="button"
-                    @click="submitReport(5)">提交报告
+                   @click="submitReport(5)">提交报告
                 </a>
             </span>
         </div>
@@ -79,202 +79,202 @@
                     <table class="report-item table  table-bordered table-striped">
                         <caption>运动传导速度 (<span>MCV</span>)</caption>
                         <thead>
-                            <tr>
-                                <th valign="middle" rowspan="2">神经名称</th>
-                                <th rowspan="2">刺激点</th>
-                                <th rowspan="2">记录点</th>
-                                <th colspan="2">传导速度m/s</th>
-                                <th colspan="2">潜伏期ms</th>
-                                <th colspan="2">波幅mv</th>
-                            </tr>
-                            <tr>
-                                <td>左侧</td>
-                                <td>右侧</td>
-                                <td>左侧</td>
-                                <td>右侧</td>
-                                <td>左侧</td>
-                                <td>右侧</td>
-                            </tr>
+                        <tr>
+                            <th valign="middle" rowspan="2">神经名称</th>
+                            <th rowspan="2">刺激点</th>
+                            <th rowspan="2">记录点</th>
+                            <th colspan="2">传导速度m/s</th>
+                            <th colspan="2">潜伏期ms</th>
+                            <th colspan="2">波幅mv</th>
+                        </tr>
+                        <tr>
+                            <td>左侧</td>
+                            <td>右侧</td>
+                            <td>左侧</td>
+                            <td>右侧</td>
+                            <td>左侧</td>
+                            <td>右侧</td>
+                        </tr>
                         </thead>
                         <tbody>
-                            <template v-if="newMcvList!=undefined && newMcvList.length>0 && isCancelEdit==false">
-                                <tr v-for="(item,index) in newMcvList" :key="index">
-                                    <td style="width:10%;">{{item.nerveName|turnToText}}</td>
-                                    <td style="width:10%;">{{item.stimPointPositionName|turnToText}}</td>
-                                    <td style="width:10%;">{{item.collectPointPositionName|turnToText}}</td>
-                                    <td style="color:#000;" :data-refer="reportData.reportStatus!=3?item.speedNLeft:''"
-                                        :title="'正常值为：'+item.speedRLeft">
-                                        {{item.speedLeft|turnToText}}
-                                        <span v-if="item.speedRLeft && reportData.reportStatus!=3"
-                                            class="badge pull-right" style="background-color:orange;color:#fff;"
-                                            v-html="getCalcPercent(item.speedLeft,item.speedRLeft)"></span>
-                                    </td>
-                                    <td style="color:#000;" :data-refer="reportData.reportStatus!=3?item.speedNRight:''"
-                                        :title="'正常值为：'+item.speedRRight">
-                                        {{item.speedRight|turnToText}}
-                                        <span v-if="item.speedRRight&& reportData.reportStatus!=3"
-                                            class="badge pull-right" style="background-color:orange;color:#fff;"
-                                            v-html="getCalcPercent(item.speedRight,item.speedRRight)"></span>
-                                    </td>
-                                    <td style="color:#000;"
-                                        :data-refer="reportData.reportStatus!=3?item.latencyPeriodNLeft:''"
-                                        :title="'正常值为：'+item.latencyPeriodRLeft">
-                                        {{item.latencyPeriodLeft|turnToText}}
-                                        <span v-if="item.latencyPeriodRLeft && reportData.reportStatus!=3"
-                                            class="badge pull-right" style="background-color:orange;color:#fff;"
-                                            v-html="getCalcPercent(item.latencyPeriodLeft,item.latencyPeriodRLeft)"></span>
-                                    </td>
-                                    <td style="color:#000;"
-                                        :data-refer="reportData.reportStatus!=3?item.latencyPeriodNRight:''"
-                                        :title="'正常值为：'+item.latencyPeriodRRight">
-                                        {{item.latencyPeriodRight|turnToText}}
-                                        <span v-if="item.latencyPeriodRRight && reportData.reportStatus!=3"
-                                            class="badge pull-right" style="background-color:orange;color:#fff;"
-                                            v-html="getCalcPercent(item.latencyPeriodRight,item.latencyPeriodRRight)"></span>
-                                    </td>
-                                    <td style="color:#000;"
-                                        :data-refer="reportData.reportStatus!=3?item.amplitudeNLeft:''"
-                                        :title="'正常值为：'+item.amplitudeRLeft">
-                                        {{item.amplitudeLeft|turnToText}}
-                                        <span v-if="item.amplitudeRLeft && reportData.reportStatus!=3"
-                                            class="badge pull-right" style="background-color:orange;color:#fff;"
-                                            v-html="getCalcPercent(item.amplitudeLeft,item.amplitudeRLeft)"></span>
-                                    </td>
-                                    <td style="color:#000;"
-                                        :data-refer="reportData.reportStatus!=3?item.amplitudeNRight:''"
-                                        :title="'正常值为：'+item.amplitudeRRight">
-                                        {{item.amplitudeRight|turnToText}}
-                                        <span v-if="item.amplitudeRRight && reportData.reportStatus!=3"
-                                            class="badge pull-right" style="background-color:orange;color:#fff;"
-                                            v-html="getCalcPercent(item.amplitudeRight,item.amplitudeRRight)"></span>
-                                    </td>
-                                </tr>
-                            </template>
-                            <template v-else-if="newMcvList!=undefined && newMcvList.length>0 && isCancelEdit">
-                                <tr v-for="(item,index) in newMcvList" :key="index">
-                                    <td style="width:10%;">
-                                        <input type="text" name="project" value="mcv" hidden>
-                                        <input type="text" class="form-control" name="nerveName"
-                                            :value="item.nerveName|turnToText">
-                                        <input type="text" hidden name="idLeft" :value="item.idLeft">
-                                        <input type="text" hidden name="idRight" :value="item.idRight">
-                                    </td>
-                                    <td style="width:10%;">
-                                        <input class="form-control" type="text" name="stimPointPositionName"
-                                            :value="item.stimPointPositionName!='-'?item.stimPointPositionName:''">
-                                    </td>
-                                    <td style="width:10%;">
-                                        <input class="form-control" type="text" name="collectPointPositionName"
-                                            :value="item.collectPointPositionName!='-'?item.collectPointPositionName:''">
-                                    </td>
-                                    <td style="color:#000;" :data-refer="item.speedNLeft"
-                                        :title="'正常值为：'+item.speedRLeft">
-                                        <input class="form-control" type="text" name="speedLeft"
-                                            :value="item.speedLeft!='-'?item.speedLeft:''">
-                                    </td>
-                                    <td style="color:#000;" :data-refer="item.speedNRight"
-                                        :title="'正常值为：'+item.speedRRight">
-                                        <input class="form-control" type="text" name="speedRight"
-                                            :value="item.speedRight!='-'?item.speedRight:''">
+                        <template v-if="newMcvList!=undefined && newMcvList.length>0 && isCancelEdit==false">
+                            <tr v-for="(item,index) in newMcvList" :key="index">
+                                <td style="width:10%;">{{item.nerveName|turnToText}}</td>
+                                <td style="width:10%;">{{item.stimPointPositionName|turnToText}}</td>
+                                <td style="width:10%;">{{item.collectPointPositionName|turnToText}}</td>
+                                <td style="color:#000;" :data-refer="reportData.reportStatus!=3?item.speedNLeft:''"
+                                    :title="'正常值为：'+item.speedRLeft">
+                                    {{item.speedLeft|turnToText}}
+                                    <span v-if="item.speedRLeft && reportData.reportStatus!=3"
+                                          class="badge pull-right" style="background-color:orange;color:#fff;"
+                                          v-html="getCalcPercent(item.speedLeft,item.speedRLeft)"></span>
+                                </td>
+                                <td style="color:#000;" :data-refer="reportData.reportStatus!=3?item.speedNRight:''"
+                                    :title="'正常值为：'+item.speedRRight">
+                                    {{item.speedRight|turnToText}}
+                                    <span v-if="item.speedRRight&& reportData.reportStatus!=3"
+                                          class="badge pull-right" style="background-color:orange;color:#fff;"
+                                          v-html="getCalcPercent(item.speedRight,item.speedRRight)"></span>
+                                </td>
+                                <td style="color:#000;"
+                                    :data-refer="reportData.reportStatus!=3?item.latencyPeriodNLeft:''"
+                                    :title="'正常值为：'+item.latencyPeriodRLeft">
+                                    {{item.latencyPeriodLeft|turnToText}}
+                                    <span v-if="item.latencyPeriodRLeft && reportData.reportStatus!=3"
+                                          class="badge pull-right" style="background-color:orange;color:#fff;"
+                                          v-html="getCalcPercent(item.latencyPeriodLeft,item.latencyPeriodRLeft)"></span>
+                                </td>
+                                <td style="color:#000;"
+                                    :data-refer="reportData.reportStatus!=3?item.latencyPeriodNRight:''"
+                                    :title="'正常值为：'+item.latencyPeriodRRight">
+                                    {{item.latencyPeriodRight|turnToText}}
+                                    <span v-if="item.latencyPeriodRRight && reportData.reportStatus!=3"
+                                          class="badge pull-right" style="background-color:orange;color:#fff;"
+                                          v-html="getCalcPercent(item.latencyPeriodRight,item.latencyPeriodRRight)"></span>
+                                </td>
+                                <td style="color:#000;"
+                                    :data-refer="reportData.reportStatus!=3?item.amplitudeNLeft:''"
+                                    :title="'正常值为：'+item.amplitudeRLeft">
+                                    {{item.amplitudeLeft|turnToText}}
+                                    <span v-if="item.amplitudeRLeft && reportData.reportStatus!=3"
+                                          class="badge pull-right" style="background-color:orange;color:#fff;"
+                                          v-html="getCalcPercent(item.amplitudeLeft,item.amplitudeRLeft)"></span>
+                                </td>
+                                <td style="color:#000;"
+                                    :data-refer="reportData.reportStatus!=3?item.amplitudeNRight:''"
+                                    :title="'正常值为：'+item.amplitudeRRight">
+                                    {{item.amplitudeRight|turnToText}}
+                                    <span v-if="item.amplitudeRRight && reportData.reportStatus!=3"
+                                          class="badge pull-right" style="background-color:orange;color:#fff;"
+                                          v-html="getCalcPercent(item.amplitudeRight,item.amplitudeRRight)"></span>
+                                </td>
+                            </tr>
+                        </template>
+                        <template v-else-if="newMcvList!=undefined && newMcvList.length>0 && isCancelEdit">
+                            <tr v-for="(item,index) in newMcvList" :key="index">
+                                <td style="width:10%;">
+                                    <input type="text" name="project" value="mcv" hidden>
+                                    <input type="text" class="form-control" name="nerveName"
+                                           :value="item.nerveName|turnToText">
+                                    <input type="text" hidden name="idLeft" :value="item.idLeft">
+                                    <input type="text" hidden name="idRight" :value="item.idRight">
+                                </td>
+                                <td style="width:10%;">
+                                    <input class="form-control" type="text" name="stimPointPositionName"
+                                           :value="item.stimPointPositionName!='-'?item.stimPointPositionName:''">
+                                </td>
+                                <td style="width:10%;">
+                                    <input class="form-control" type="text" name="collectPointPositionName"
+                                           :value="item.collectPointPositionName!='-'?item.collectPointPositionName:''">
+                                </td>
+                                <td style="color:#000;" :data-refer="item.speedNLeft"
+                                    :title="'正常值为：'+item.speedRLeft">
+                                    <input class="form-control" type="text" name="speedLeft"
+                                           :value="item.speedLeft!='-'?item.speedLeft:''">
+                                </td>
+                                <td style="color:#000;" :data-refer="item.speedNRight"
+                                    :title="'正常值为：'+item.speedRRight">
+                                    <input class="form-control" type="text" name="speedRight"
+                                           :value="item.speedRight!='-'?item.speedRight:''">
 
-                                    </td>
-                                    <td style="color:#000;" :data-refer="item.latencyPeriodNLeft"
-                                        :title="'正常值为：'+item.latencyPeriodRLeft">
-                                        <input class="form-control" type="text" name="latencyPeriodLeft"
-                                            :value="item.latencyPeriodLeft!='-'?item.latencyPeriodLeft:''">
+                                </td>
+                                <td style="color:#000;" :data-refer="item.latencyPeriodNLeft"
+                                    :title="'正常值为：'+item.latencyPeriodRLeft">
+                                    <input class="form-control" type="text" name="latencyPeriodLeft"
+                                           :value="item.latencyPeriodLeft!='-'?item.latencyPeriodLeft:''">
 
-                                    </td>
-                                    <td style="color:#000;" :data-refer="item.latencyPeriodNRight"
-                                        :title="'正常值为：'+item.latencyPeriodRRight">
-                                        <input class="form-control" type="text" name="latencyPeriodRight"
-                                            :value="item.latencyPeriodRight!='-'?item.latencyPeriodRight:''">
+                                </td>
+                                <td style="color:#000;" :data-refer="item.latencyPeriodNRight"
+                                    :title="'正常值为：'+item.latencyPeriodRRight">
+                                    <input class="form-control" type="text" name="latencyPeriodRight"
+                                           :value="item.latencyPeriodRight!='-'?item.latencyPeriodRight:''">
 
-                                    </td>
-                                    <td style="color:#000;" :data-refer="item.amplitudeNLeft"
-                                        :title="'正常值为：'+item.amplitudeRLeft">
-                                        <input class="form-control" type="text" name="amplitudeLeft"
-                                            :value="item.amplitudeLeft!='-'?item.amplitudeLeft:''">
+                                </td>
+                                <td style="color:#000;" :data-refer="item.amplitudeNLeft"
+                                    :title="'正常值为：'+item.amplitudeRLeft">
+                                    <input class="form-control" type="text" name="amplitudeLeft"
+                                           :value="item.amplitudeLeft!='-'?item.amplitudeLeft:''">
 
-                                    </td>
-                                    <td style="color:#000;" :data-refer="item.amplitudeNRight"
-                                        :title="'正常值为：'+item.amplitudeRRight">
-                                        <input class="form-control" type="text" name="amplitudeRight"
-                                            :value="item.amplitudeRight!='-'?item.amplitudeRight:''">
+                                </td>
+                                <td style="color:#000;" :data-refer="item.amplitudeNRight"
+                                    :title="'正常值为：'+item.amplitudeRRight">
+                                    <input class="form-control" type="text" name="amplitudeRight"
+                                           :value="item.amplitudeRight!='-'?item.amplitudeRight:''">
 
-                                    </td>
+                                </td>
 
-                                </tr>
-                            </template>
-                            <template v-else>
-                                <tr>
-                                    <td colspan="9" class="text-info">
-                                        没有MCV的检查数据
-                                    </td>
-                                </tr>
-                            </template>
+                            </tr>
+                        </template>
+                        <template v-else>
+                            <tr>
+                                <td colspan="9" class="text-info">
+                                    没有MCV的检查数据
+                                </td>
+                            </tr>
+                        </template>
                         </tbody>
                         <template v-if="isShowDetail && newMcvList.length>0">
                             <tr>
                                 <td colspan="5" width="50%" class="handedness-left"
                                     style="padding:20px;vertical-align:top!important">
                                     <table width="100%" style="margin-bottom: 20px;"
-                                        class="table  table-bordered table-striped"
-                                        v-for="(val,key) in leftOrRightImgMcv.right" :key="key">
+                                           class="table  table-bordered table-striped"
+                                           v-for="(val,key) in leftOrRightImgMcv.right" :key="key">
                                         <thead>
-                                            <tr>
-                                                <th>{{key}}-右侧</th>
-                                                <th>传导速度m/s</th>
-                                                <th>潜伏期ms</th>
-                                                <th>波幅mv</th>
-                                            </tr>
+                                        <tr>
+                                            <th>{{key}}-右侧</th>
+                                            <th>传导速度m/s</th>
+                                            <th>潜伏期ms</th>
+                                            <th>波幅mv</th>
+                                        </tr>
                                         </thead>
                                         <tbody>
-                                            <tr v-for="(item,index) in val" :key="index">
-                                                <td>
-                                                    {{item.stimPointPositionName}} - {{item.collectPointPositionName}}
-                                                </td>
-                                                <td data-name="speed"
-                                                    :data-refer="reportData.reportStatus!=3?item.speedN:''"
-                                                    :title="'正常值为：'+item.speedR">
-                                                    {{item.speed}}
-                                                    <span class="badge pull-right"
-                                                        v-if="item.speedR && reportData.reportStatus!=3"
-                                                        style="background-color:orange;color:#fff;"
-                                                        v-html="getCalcPercent(item.speed,item.speedR)">
+                                        <tr v-for="(item,index) in val" :key="index">
+                                            <td>
+                                                {{item.stimPointPositionName}} - {{item.collectPointPositionName}}
+                                            </td>
+                                            <td data-name="speed"
+                                                :data-refer="reportData.reportStatus!=3?item.speedN:''"
+                                                :title="'正常值为：'+item.speedR">
+                                                {{item.speed}}
+                                                <span class="badge pull-right"
+                                                      v-if="item.speedR && reportData.reportStatus!=3"
+                                                      style="background-color:orange;color:#fff;"
+                                                      v-html="getCalcPercent(item.speed,item.speedR)">
                                                     </span>
-                                                </td>
-                                                <td data-name="latencyPeriod"
-                                                    :data-refer="reportData.reportStatus!=3?item.latencyPeriodN:''"
-                                                    :title="'正常值为：'+item.latencyPeriodR">
-                                                    {{item.latencyPeriod}}
-                                                    <span class="badge pull-right"
-                                                        v-if="item.latencyPeriodR && reportData.reportStatus!=3"
-                                                        style="background-color:orange;color:#fff;"
-                                                        v-html="getCalcPercent(item.latencyPeriod,item.latencyPeriodR)">
+                                            </td>
+                                            <td data-name="latencyPeriod"
+                                                :data-refer="reportData.reportStatus!=3?item.latencyPeriodN:''"
+                                                :title="'正常值为：'+item.latencyPeriodR">
+                                                {{item.latencyPeriod}}
+                                                <span class="badge pull-right"
+                                                      v-if="item.latencyPeriodR && reportData.reportStatus!=3"
+                                                      style="background-color:orange;color:#fff;"
+                                                      v-html="getCalcPercent(item.latencyPeriod,item.latencyPeriodR)">
                                                     </span>
-                                                </td>
-                                                <td data-name="amplitude"
-                                                    :data-refer="reportData.reportStatus!=3?item.amplitudeN:''"
-                                                    :title="'正常值为:'+item.amplitudeR">
-                                                    {{item.amplitude}}
-                                                    <span class="badge pull-right"
-                                                        v-if="item.amplitudeR && reportData.reportStatus!=3"
-                                                        style="background-color:orange;color:#fff;"
-                                                        v-html="getCalcPercent(item.amplitude,item.amplitudeR)">
+                                            </td>
+                                            <td data-name="amplitude"
+                                                :data-refer="reportData.reportStatus!=3?item.amplitudeN:''"
+                                                :title="'正常值为:'+item.amplitudeR">
+                                                {{item.amplitude}}
+                                                <span class="badge pull-right"
+                                                      v-if="item.amplitudeR && reportData.reportStatus!=3"
+                                                      style="background-color:orange;color:#fff;"
+                                                      v-html="getCalcPercent(item.amplitude,item.amplitudeR)">
                                                     </span>
-                                                </td>
+                                            </td>
 
-                                            </tr>
-                                            <tr>
-                                                <td colspan="4" class="img-size"><b
-                                                        style="float:left;min-height:100px;">
-                                                        报告图片：</b>
-                                                    <br>
-                                                    <img style="width:100%; display:inline-block"
-                                                        :src="imgBaseUrl+reportData.emgNo+'_'+key+'_1'+'_1'"
-                                                        :alt="key+'右侧'+'的图片没有'">
-                                                </td>
-                                            </tr>
+                                        </tr>
+                                        <tr>
+                                            <td colspan="4" class="img-size"><b
+                                                    style="float:left;min-height:100px;">
+                                                报告图片：</b>
+                                                <br>
+                                                <img style="width:100%; display:inline-block"
+                                                     :src="imgBaseUrl+reportData.emgNo+'_'+key+'_1'+'_1'"
+                                                     :alt="key+'右侧'+'的图片没有'">
+                                            </td>
+                                        </tr>
                                         </tbody>
 
                                     </table>
@@ -282,62 +282,62 @@
                                 <td colspan="4" width="50%" class="handedness-right"
                                     style="padding:20px;vertical-align:top!important">
                                     <table width="100%" style="margin-bottom: 20px;"
-                                        class="table  table-bordered table-striped"
-                                        v-for="(val,key) in leftOrRightImgMcv.left" :key="key">
+                                           class="table  table-bordered table-striped"
+                                           v-for="(val,key) in leftOrRightImgMcv.left" :key="key">
                                         <thead>
-                                            <tr>
-                                                <th>{{key}}-左侧</th>
-                                                <th>传导速度m/s</th>
-                                                <th>潜伏期ms</th>
-                                                <th>波幅mv</th>
-                                            </tr>
+                                        <tr>
+                                            <th>{{key}}-左侧</th>
+                                            <th>传导速度m/s</th>
+                                            <th>潜伏期ms</th>
+                                            <th>波幅mv</th>
+                                        </tr>
                                         </thead>
                                         <tbody>
-                                            <tr v-for="(item,index) in val" :key="index">
-                                                <td>
-                                                    {{item.stimPointPositionName}} - {{item.collectPointPositionName}}
-                                                </td>
-                                                <td data-name="speed"
-                                                    :data-refer="reportData.reportStatus!=3?item.speedN:''"
-                                                    :title="'正常值为：'+item.speedR">
-                                                    {{item.speed}}
-                                                    <span class="badge pull-right"
-                                                        v-if="item.speedR && reportData.reportStatus!=3"
-                                                        style="background-color:orange;color:#fff;"
-                                                        v-html="getCalcPercent(item.speed,item.speedR)">
+                                        <tr v-for="(item,index) in val" :key="index">
+                                            <td>
+                                                {{item.stimPointPositionName}} - {{item.collectPointPositionName}}
+                                            </td>
+                                            <td data-name="speed"
+                                                :data-refer="reportData.reportStatus!=3?item.speedN:''"
+                                                :title="'正常值为：'+item.speedR">
+                                                {{item.speed}}
+                                                <span class="badge pull-right"
+                                                      v-if="item.speedR && reportData.reportStatus!=3"
+                                                      style="background-color:orange;color:#fff;"
+                                                      v-html="getCalcPercent(item.speed,item.speedR)">
                                                     </span>
-                                                </td>
-                                                <td data-name="latencyPeriod"
-                                                    :data-refer="reportData.reportStatus!=3?item.latencyPeriodN:''"
-                                                    :title="'正常值为：'+item.latencyPeriodR">
-                                                    {{item.latencyPeriod}}
-                                                    <span class="badge pull-right"
-                                                        v-if="item.latencyPeriodR && reportData.reportStatus!=3"
-                                                        style="background-color:orange;color:#fff;"
-                                                        v-html="getCalcPercent(item.latencyPeriod,item.latencyPeriodR)">
+                                            </td>
+                                            <td data-name="latencyPeriod"
+                                                :data-refer="reportData.reportStatus!=3?item.latencyPeriodN:''"
+                                                :title="'正常值为：'+item.latencyPeriodR">
+                                                {{item.latencyPeriod}}
+                                                <span class="badge pull-right"
+                                                      v-if="item.latencyPeriodR && reportData.reportStatus!=3"
+                                                      style="background-color:orange;color:#fff;"
+                                                      v-html="getCalcPercent(item.latencyPeriod,item.latencyPeriodR)">
                                                     </span>
-                                                </td>
-                                                <td data-name="amplitude"
-                                                    :data-refer="reportData.reportStatus!=3?item.amplitudeN:''"
-                                                    :title="'正常值为：'+item.amplitudeR">
-                                                    {{item.amplitude}}
-                                                    <span class="badge pull-right"
-                                                        v-if="item.amplitudeR && reportData.reportStatus!=3"
-                                                        style="background-color:orange;color:#fff;"
-                                                        v-html="getCalcPercent(item.amplitude,item.amplitudeR)">
+                                            </td>
+                                            <td data-name="amplitude"
+                                                :data-refer="reportData.reportStatus!=3?item.amplitudeN:''"
+                                                :title="'正常值为：'+item.amplitudeR">
+                                                {{item.amplitude}}
+                                                <span class="badge pull-right"
+                                                      v-if="item.amplitudeR && reportData.reportStatus!=3"
+                                                      style="background-color:orange;color:#fff;"
+                                                      v-html="getCalcPercent(item.amplitude,item.amplitudeR)">
                                                     </span>
-                                                </td>
+                                            </td>
 
-                                            </tr>
-                                            <tr>
-                                                <td colspan="4" class="img-size"><b
-                                                        style="float:left;min-height:100px;">
-                                                        报告图片：</b><br>
-                                                    <img style="width:100%; display:inline-block"
-                                                        :src="imgBaseUrl+reportData.emgNo+'_'+key+'_0'+'_1'"
-                                                        :alt="key+'左侧'+'的图片没有'">
-                                                </td>
-                                            </tr>
+                                        </tr>
+                                        <tr>
+                                            <td colspan="4" class="img-size"><b
+                                                    style="float:left;min-height:100px;">
+                                                报告图片：</b><br>
+                                                <img style="width:100%; display:inline-block"
+                                                     :src="imgBaseUrl+reportData.emgNo+'_'+key+'_0'+'_1'"
+                                                     :alt="key+'左侧'+'的图片没有'">
+                                            </td>
+                                        </tr>
                                         </tbody>
 
                                     </table>
@@ -349,200 +349,200 @@
                     <table class="report-item table table-bordered table-striped">
                         <caption>感觉传导速度 (<span>SCV</span>)</caption>
                         <thead>
-                            <tr>
-                                <th valign="middle" rowspan="2">神经名称</th>
-                                <th rowspan="2">刺激点</th>
-                                <th rowspan="2">记录点</th>
-                                <th colspan="2">传导速度m/s</th>
-                                <th colspan="2">潜伏期ms</th>
-                                <th colspan="2">波幅mv</th>
-                            </tr>
-                            <tr>
-                                <td>左侧</td>
-                                <td>右侧</td>
-                                <td>左侧</td>
-                                <td>右侧</td>
-                                <td>左侧</td>
-                                <td>右侧</td>
-                            </tr>
+                        <tr>
+                            <th valign="middle" rowspan="2">神经名称</th>
+                            <th rowspan="2">刺激点</th>
+                            <th rowspan="2">记录点</th>
+                            <th colspan="2">传导速度m/s</th>
+                            <th colspan="2">潜伏期ms</th>
+                            <th colspan="2">波幅mv</th>
+                        </tr>
+                        <tr>
+                            <td>左侧</td>
+                            <td>右侧</td>
+                            <td>左侧</td>
+                            <td>右侧</td>
+                            <td>左侧</td>
+                            <td>右侧</td>
+                        </tr>
                         </thead>
                         <tbody>
-                            <template v-if="newScvList!=undefined && newScvList.length>0 && isCancelEdit==false">
-                                <tr v-for="(item,index) in newScvList" :key="index">
-                                    <td style="width:10%;">{{item.nerveName|turnToText}}</td>
-                                    <td style="width:10%;">{{item.stimPointPositionName|turnToText}}</td>
-                                    <td style="width:10%;">{{item.collectPointPositionName|turnToText}}</td>
-                                    <td style="color:#000;" :data-refer="reportData.reportStatus!=3?item.speedNLeft:''"
-                                        :title="'正常值为：'+item.speedRLeft">
-                                        {{item.speedLeft|turnToText}}
-                                        <span v-if="item.speedRLeft&& reportData.reportStatus!=3"
-                                            class="badge pull-right" style="background-color:orange;color:#fff;"
-                                            v-html="getCalcPercent(item.speedLeft,item.speedRLeft)"></span>
-                                    </td>
-                                    <td style="color:#000;" :data-refer="reportData.reportStatus!=3?item.speedNRight:''"
-                                        :title="'正常值为：'+item.speedRRight">
-                                        {{item.speedRight|turnToText}}
-                                        <span v-if="item.speedRRight&& reportData.reportStatus!=3"
-                                            class="badge pull-right" style="background-color:orange;color:#fff;"
-                                            v-html="getCalcPercent(item.speedRight,item.speedRRight)"></span>
-                                    </td>
-                                    <td style="color:#000;"
-                                        :data-refer="reportData.reportStatus!=3?item.latencyPeriodNLeft:''"
-                                        :title="'正常值为：'+item.latencyPeriodRLeft">
-                                        {{item.latencyPeriodLeft|turnToText}}
-                                        <span v-if="item.latencyPeriodRLeft && reportData.reportStatus!=3"
-                                            class="badge pull-right" style="background-color:orange;color:#fff;"
-                                            v-html="getCalcPercent(item.latencyPeriodLeft,item.latencyPeriodRLeft)"></span>
-                                    </td>
-                                    <td style="color:#000;"
-                                        :data-refer="reportData.reportStatus!=3?item.latencyPeriodNRight:''"
-                                        :title="'正常值为：'+item.latencyPeriodRRight">
-                                        {{item.latencyPeriodRight|turnToText}}
-                                        <span v-if="item.latencyPeriodRRight && reportData.reportStatus!=3"
-                                            class="badge pull-right" style="background-color:orange;color:#fff;"
-                                            v-html="getCalcPercent(item.latencyPeriodRight,item.latencyPeriodRRight)"></span>
-                                    </td>
-                                    <td style="color:#000;"
-                                        :data-refer="reportData.reportStatus!=3?item.amplitudeNLeft:''"
-                                        :title="'正常值为：'+item.amplitudeRLeft">
-                                        {{item.amplitudeLeft|turnToText}}
-                                        <span v-if="item.amplitudeRLeft && reportData.reportStatus!=3"
-                                            class="badge pull-right" style="background-color:orange;color:#fff;"
-                                            v-html="getCalcPercent(item.amplitudeLeft,item.amplitudeRLeft)"></span>
-                                    </td>
-                                    <td style="color:#000;"
-                                        :data-refer="reportData.reportStatus!=3?item.amplitudeNRight:''"
-                                        :title="'正常值为：'+item.amplitudeRRight">
-                                        {{item.amplitudeRight|turnToText}}
-                                        <span v-if="item.amplitudeRRight && reportData.reportStatus!=3"
-                                            class="badge pull-right" style="background-color:orange;color:#fff;"
-                                            v-html="getCalcPercent(item.amplitudeRight,item.amplitudeRRight)"></span>
-                                    </td>
-                                </tr>
-                            </template>
-                            <template v-else-if="newScvList!=undefined && newScvList.length>0 && isCancelEdit">
-                                <tr v-for="(item,index) in newScvList" :key="index">
-                                    <td style="width:10%;">
-                                        <input type="text" name="project" value="scv" hidden>
-                                        <input class="form-control" type="text" name="nerveName"
-                                            :value="item.nerveName!='-'?item.nerveName:''">
-                                        <input type="text" hidden name="idLeft" :value="item.idLeft">
-                                        <input type="text" hidden name="idRight" :value="item.idRight">
-                                    </td>
-                                    <td style="width:10%;">
-                                        <input class="form-control" type="text" name="stimPointPositionName"
-                                            :value="item.stimPointPositionName!='-'?item.stimPointPositionName:''">
-                                    </td>
-                                    <td style="width:10%;">
-                                        <input class="form-control" type="text" name="collectPointPositionName"
-                                            :value="item.collectPointPositionName!='-'?item.collectPointPositionName:''">
-                                    </td>
-                                    <td style="color:#000;" :data-refer="item.speedNLeft"
-                                        :title="'正常值为：'+item.speedRLeft">
-                                        <input class="form-control" type="text" name="speedLeft"
-                                            :value="item.speedLeft!='-'?item.speedLeft:''">
-                                    </td>
-                                    <td style="color:#000;" :data-refer="item.speedNRight"
-                                        :title="'正常值为：'+item.speedRRight">
-                                        <input class="form-control" type="text" name="speedRight"
-                                            :value="item.speedRight!='-'?item.speedRight:''">
+                        <template v-if="newScvList!=undefined && newScvList.length>0 && isCancelEdit==false">
+                            <tr v-for="(item,index) in newScvList" :key="index">
+                                <td style="width:10%;">{{item.nerveName|turnToText}}</td>
+                                <td style="width:10%;">{{item.stimPointPositionName|turnToText}}</td>
+                                <td style="width:10%;">{{item.collectPointPositionName|turnToText}}</td>
+                                <td style="color:#000;" :data-refer="reportData.reportStatus!=3?item.speedNLeft:''"
+                                    :title="'正常值为：'+item.speedRLeft">
+                                    {{item.speedLeft|turnToText}}
+                                    <span v-if="item.speedRLeft&& reportData.reportStatus!=3"
+                                          class="badge pull-right" style="background-color:orange;color:#fff;"
+                                          v-html="getCalcPercent(item.speedLeft,item.speedRLeft)"></span>
+                                </td>
+                                <td style="color:#000;" :data-refer="reportData.reportStatus!=3?item.speedNRight:''"
+                                    :title="'正常值为：'+item.speedRRight">
+                                    {{item.speedRight|turnToText}}
+                                    <span v-if="item.speedRRight&& reportData.reportStatus!=3"
+                                          class="badge pull-right" style="background-color:orange;color:#fff;"
+                                          v-html="getCalcPercent(item.speedRight,item.speedRRight)"></span>
+                                </td>
+                                <td style="color:#000;"
+                                    :data-refer="reportData.reportStatus!=3?item.latencyPeriodNLeft:''"
+                                    :title="'正常值为：'+item.latencyPeriodRLeft">
+                                    {{item.latencyPeriodLeft|turnToText}}
+                                    <span v-if="item.latencyPeriodRLeft && reportData.reportStatus!=3"
+                                          class="badge pull-right" style="background-color:orange;color:#fff;"
+                                          v-html="getCalcPercent(item.latencyPeriodLeft,item.latencyPeriodRLeft)"></span>
+                                </td>
+                                <td style="color:#000;"
+                                    :data-refer="reportData.reportStatus!=3?item.latencyPeriodNRight:''"
+                                    :title="'正常值为：'+item.latencyPeriodRRight">
+                                    {{item.latencyPeriodRight|turnToText}}
+                                    <span v-if="item.latencyPeriodRRight && reportData.reportStatus!=3"
+                                          class="badge pull-right" style="background-color:orange;color:#fff;"
+                                          v-html="getCalcPercent(item.latencyPeriodRight,item.latencyPeriodRRight)"></span>
+                                </td>
+                                <td style="color:#000;"
+                                    :data-refer="reportData.reportStatus!=3?item.amplitudeNLeft:''"
+                                    :title="'正常值为：'+item.amplitudeRLeft">
+                                    {{item.amplitudeLeft|turnToText}}
+                                    <span v-if="item.amplitudeRLeft && reportData.reportStatus!=3"
+                                          class="badge pull-right" style="background-color:orange;color:#fff;"
+                                          v-html="getCalcPercent(item.amplitudeLeft,item.amplitudeRLeft)"></span>
+                                </td>
+                                <td style="color:#000;"
+                                    :data-refer="reportData.reportStatus!=3?item.amplitudeNRight:''"
+                                    :title="'正常值为：'+item.amplitudeRRight">
+                                    {{item.amplitudeRight|turnToText}}
+                                    <span v-if="item.amplitudeRRight && reportData.reportStatus!=3"
+                                          class="badge pull-right" style="background-color:orange;color:#fff;"
+                                          v-html="getCalcPercent(item.amplitudeRight,item.amplitudeRRight)"></span>
+                                </td>
+                            </tr>
+                        </template>
+                        <template v-else-if="newScvList!=undefined && newScvList.length>0 && isCancelEdit">
+                            <tr v-for="(item,index) in newScvList" :key="index">
+                                <td style="width:10%;">
+                                    <input type="text" name="project" value="scv" hidden>
+                                    <input class="form-control" type="text" name="nerveName"
+                                           :value="item.nerveName!='-'?item.nerveName:''">
+                                    <input type="text" hidden name="idLeft" :value="item.idLeft">
+                                    <input type="text" hidden name="idRight" :value="item.idRight">
+                                </td>
+                                <td style="width:10%;">
+                                    <input class="form-control" type="text" name="stimPointPositionName"
+                                           :value="item.stimPointPositionName!='-'?item.stimPointPositionName:''">
+                                </td>
+                                <td style="width:10%;">
+                                    <input class="form-control" type="text" name="collectPointPositionName"
+                                           :value="item.collectPointPositionName!='-'?item.collectPointPositionName:''">
+                                </td>
+                                <td style="color:#000;" :data-refer="item.speedNLeft"
+                                    :title="'正常值为：'+item.speedRLeft">
+                                    <input class="form-control" type="text" name="speedLeft"
+                                           :value="item.speedLeft!='-'?item.speedLeft:''">
+                                </td>
+                                <td style="color:#000;" :data-refer="item.speedNRight"
+                                    :title="'正常值为：'+item.speedRRight">
+                                    <input class="form-control" type="text" name="speedRight"
+                                           :value="item.speedRight!='-'?item.speedRight:''">
 
-                                    </td>
-                                    <td style="color:#000;" :data-refer="item.latencyPeriodNLeft"
-                                        :title="'正常值为：'+item.latencyPeriodRLeft">
-                                        <input class="form-control" type="text" name="latencyPeriodLeft"
-                                            :value="item.latencyPeriodLeft!='-'?item.latencyPeriodLeft:''">
+                                </td>
+                                <td style="color:#000;" :data-refer="item.latencyPeriodNLeft"
+                                    :title="'正常值为：'+item.latencyPeriodRLeft">
+                                    <input class="form-control" type="text" name="latencyPeriodLeft"
+                                           :value="item.latencyPeriodLeft!='-'?item.latencyPeriodLeft:''">
 
-                                    </td>
-                                    <td style="color:#000;" :data-refer="item.latencyPeriodNRight"
-                                        :title="'正常值为：'+item.latencyPeriodRRight">
-                                        <input class="form-control" type="text" name="latencyPeriodRight"
-                                            :value="item.latencyPeriodRight!='-'?item.latencyPeriodRight:''">
+                                </td>
+                                <td style="color:#000;" :data-refer="item.latencyPeriodNRight"
+                                    :title="'正常值为：'+item.latencyPeriodRRight">
+                                    <input class="form-control" type="text" name="latencyPeriodRight"
+                                           :value="item.latencyPeriodRight!='-'?item.latencyPeriodRight:''">
 
-                                    </td>
-                                    <td style="color:#000;" :data-refer="item.amplitudeNLeft"
-                                        :title="'正常值为：'+item.amplitudeRLeft">
-                                        <input class="form-control" type="text" name="amplitudeLeft"
-                                            :value="item.amplitudeLeft!='-'?item.amplitudeLeft:''">
+                                </td>
+                                <td style="color:#000;" :data-refer="item.amplitudeNLeft"
+                                    :title="'正常值为：'+item.amplitudeRLeft">
+                                    <input class="form-control" type="text" name="amplitudeLeft"
+                                           :value="item.amplitudeLeft!='-'?item.amplitudeLeft:''">
 
-                                    </td>
-                                    <td style="color:#000;" :data-refer="item.amplitudeNRight"
-                                        :title="'正常值为：'+item.amplitudeRRight">
-                                        <input class="form-control" type="text" name="amplitudeRight"
-                                            :value="item.amplitudeRight!='-'?item.amplitudeRight:''">
+                                </td>
+                                <td style="color:#000;" :data-refer="item.amplitudeNRight"
+                                    :title="'正常值为：'+item.amplitudeRRight">
+                                    <input class="form-control" type="text" name="amplitudeRight"
+                                           :value="item.amplitudeRight!='-'?item.amplitudeRight:''">
 
-                                    </td>
-                                </tr>
-                            </template>
-                            <template v-else>
-                                <tr>
-                                    <td colspan="9" class="text-info">没有SCV的检查数据</td>
-                                </tr>
-                            </template>
+                                </td>
+                            </tr>
+                        </template>
+                        <template v-else>
+                            <tr>
+                                <td colspan="9" class="text-info">没有SCV的检查数据</td>
+                            </tr>
+                        </template>
                         </tbody>
                         <template v-if="isShowDetail && newScvList.length>0">
                             <tr>
                                 <td colspan="5" width="50%" class="handedness-left"
                                     style="padding:20px;vertical-align:top!important">
                                     <table width="100%" style="margin-bottom: 20px;"
-                                        class="table  table-bordered table-striped"
-                                        v-for="(val,key) in leftOrRightImgScv.right" :key="key">
+                                           class="table  table-bordered table-striped"
+                                           v-for="(val,key) in leftOrRightImgScv.right" :key="key">
                                         <thead>
-                                            <tr>
-                                                <th>{{key}}-右侧</th>
-                                                <th>传导速度m/s</th>
-                                                <th>潜伏期ms</th>
-                                                <th>波幅mv</th>
-                                            </tr>
+                                        <tr>
+                                            <th>{{key}}-右侧</th>
+                                            <th>传导速度m/s</th>
+                                            <th>潜伏期ms</th>
+                                            <th>波幅mv</th>
+                                        </tr>
                                         </thead>
                                         <tbody>
-                                            <tr v-for="(item,index) in val" :key="index">
-                                                <td>
-                                                    {{item.stimPointPositionName}} - {{item.collectPointPositionName}}
-                                                </td>
-                                                <td data-name="speed"
-                                                    :data-refer="reportData.reportStatus!=3?item.speedN:''"
-                                                    :title="'正常值为'+item.speedR">
-                                                    {{item.speed}}
-                                                    <span class="badge pull-right"
-                                                        v-if="item.speedR && reportData.reportStatus!=3"
-                                                        style="background-color:orange;color:#fff;"
-                                                        v-html="getCalcPercent(item.speed,item.speedR)"
-                                                        v-html="getCalcPercent(item.speed,item.speedR)">
+                                        <tr v-for="(item,index) in val" :key="index">
+                                            <td>
+                                                {{item.stimPointPositionName}} - {{item.collectPointPositionName}}
+                                            </td>
+                                            <td data-name="speed"
+                                                :data-refer="reportData.reportStatus!=3?item.speedN:''"
+                                                :title="'正常值为'+item.speedR">
+                                                {{item.speed}}
+                                                <span class="badge pull-right"
+                                                      v-if="item.speedR && reportData.reportStatus!=3"
+                                                      style="background-color:orange;color:#fff;"
+                                                      v-html="getCalcPercent(item.speed,item.speedR)"
+                                                      v-html="getCalcPercent(item.speed,item.speedR)">
                                                     </span>
-                                                </td>
-                                                <td data-name="latencyPeriod"
-                                                    :data-refer="reportData.reportStatus!=3?item.latencyPeriodN:''"
-                                                    :title="'正常值为：'+item.latencyPeriodR">
-                                                    {{item.latencyPeriod}}
-                                                    <span class="badge pull-right"
-                                                        v-if="item.latencyPeriodR && reportData.reportStatus!=3"
-                                                        style="background-color:orange;color:#fff;"
-                                                        v-html="getCalcPercent(item.latencyPeriod,item.latencyPeriodR)">
+                                            </td>
+                                            <td data-name="latencyPeriod"
+                                                :data-refer="reportData.reportStatus!=3?item.latencyPeriodN:''"
+                                                :title="'正常值为：'+item.latencyPeriodR">
+                                                {{item.latencyPeriod}}
+                                                <span class="badge pull-right"
+                                                      v-if="item.latencyPeriodR && reportData.reportStatus!=3"
+                                                      style="background-color:orange;color:#fff;"
+                                                      v-html="getCalcPercent(item.latencyPeriod,item.latencyPeriodR)">
                                                     </span>
-                                                </td>
-                                                <td data-name="amplitude"
-                                                    :data-refer="reportData.reportStatus!=3?item.amplitudeN:''"
-                                                    :title="'正常值为：'+item.amplitudeR">
-                                                    {{item.amplitude}}
-                                                    <span class="badge pull-right"
-                                                        v-if="item.amplitudeR && reportData.reportStatus!=3"
-                                                        style="background-color:orange;color:#fff;"
-                                                        v-html="getCalcPercent(item.amplitude,item.amplitudeR)">
+                                            </td>
+                                            <td data-name="amplitude"
+                                                :data-refer="reportData.reportStatus!=3?item.amplitudeN:''"
+                                                :title="'正常值为：'+item.amplitudeR">
+                                                {{item.amplitude}}
+                                                <span class="badge pull-right"
+                                                      v-if="item.amplitudeR && reportData.reportStatus!=3"
+                                                      style="background-color:orange;color:#fff;"
+                                                      v-html="getCalcPercent(item.amplitude,item.amplitudeR)">
                                                     </span>
-                                                </td>
+                                            </td>
 
-                                            </tr>
-                                            <tr>
-                                                <td colspan="4" class="img-size"><b
-                                                        style="float:left;min-height:100px;">
-                                                        报告图片：</b>
-                                                    <br>
-                                                    <img style="width:100%; display:inline-block"
-                                                        :src="imgBaseUrl+reportData.emgNo+'_'+key+'_1'+'_3'"
-                                                        :alt="key+'右侧'+'的图片没有'">
-                                                </td>
-                                            </tr>
+                                        </tr>
+                                        <tr>
+                                            <td colspan="4" class="img-size"><b
+                                                    style="float:left;min-height:100px;">
+                                                报告图片：</b>
+                                                <br>
+                                                <img style="width:100%; display:inline-block"
+                                                     :src="imgBaseUrl+reportData.emgNo+'_'+key+'_1'+'_3'"
+                                                     :alt="key+'右侧'+'的图片没有'">
+                                            </td>
+                                        </tr>
                                         </tbody>
 
                                     </table>
@@ -550,62 +550,62 @@
                                 <td colspan="4" width="50%" class="handedness-right"
                                     style="padding:20px;vertical-align:top!important">
                                     <table width="100%" style="margin-bottom: 20px;"
-                                        class="table  table-bordered table-striped"
-                                        v-for="(val,key) in leftOrRightImgMcv.left" :key="key">
+                                           class="table  table-bordered table-striped"
+                                           v-for="(val,key) in leftOrRightImgMcv.left" :key="key">
                                         <thead>
-                                            <tr>
-                                                <th>{{key}}-左侧</th>
-                                                <th>传导速度m/s</th>
-                                                <th>潜伏期ms</th>
-                                                <th>波幅mv</th>
-                                            </tr>
+                                        <tr>
+                                            <th>{{key}}-左侧</th>
+                                            <th>传导速度m/s</th>
+                                            <th>潜伏期ms</th>
+                                            <th>波幅mv</th>
+                                        </tr>
                                         </thead>
                                         <tbody>
-                                            <tr v-for="(item,index) in val" :key="index">
-                                                <td>
-                                                    {{item.stimPointPositionName}} - {{item.collectPointPositionName}}
-                                                </td>
-                                                <td data-name="speed"
-                                                    :data-refer="reportData.reportStatus!=3?item.speedN:''"
-                                                    :title="'正常值为：'+item.speedR">
-                                                    {{item.speed}}
-                                                    <span class="badge pull-right"
-                                                        v-if="item.speedR && reportData.reportStatus!=3"
-                                                        style="background-color:orange;color:#fff;"
-                                                        v-html="getCalcPercent(item.speed,item.speedR)">
+                                        <tr v-for="(item,index) in val" :key="index">
+                                            <td>
+                                                {{item.stimPointPositionName}} - {{item.collectPointPositionName}}
+                                            </td>
+                                            <td data-name="speed"
+                                                :data-refer="reportData.reportStatus!=3?item.speedN:''"
+                                                :title="'正常值为：'+item.speedR">
+                                                {{item.speed}}
+                                                <span class="badge pull-right"
+                                                      v-if="item.speedR && reportData.reportStatus!=3"
+                                                      style="background-color:orange;color:#fff;"
+                                                      v-html="getCalcPercent(item.speed,item.speedR)">
                                                     </span>
-                                                </td>
-                                                <td data-name="latencyPeriod"
-                                                    :data-refer="reportData.reportStatus!=3?item.latencyPeriodN:''"
-                                                    :title="'正常值为：'+item.latencyPeriodR">
-                                                    {{item.latencyPeriod}}
-                                                    <span class="badge pull-right"
-                                                        v-if="item.latencyPeriodR && reportData.reportStatus!=3"
-                                                        style="background-color:orange;color:#fff;"
-                                                        v-html="getCalcPercent(item.latencyPeriod,item.latencyPeriodR)">
+                                            </td>
+                                            <td data-name="latencyPeriod"
+                                                :data-refer="reportData.reportStatus!=3?item.latencyPeriodN:''"
+                                                :title="'正常值为：'+item.latencyPeriodR">
+                                                {{item.latencyPeriod}}
+                                                <span class="badge pull-right"
+                                                      v-if="item.latencyPeriodR && reportData.reportStatus!=3"
+                                                      style="background-color:orange;color:#fff;"
+                                                      v-html="getCalcPercent(item.latencyPeriod,item.latencyPeriodR)">
                                                     </span>
-                                                </td>
-                                                <td data-name="amplitude"
-                                                    :data-refer="reportData.reportStatus!=3?item.amplitudeN:''"
-                                                    :title="'正常值为:'+item.amplitudeR">
-                                                    {{item.amplitude}}
-                                                    <span class="badge pull-right"
-                                                        v-if="item.amplitudeR && reportData.reportStatus!=3"
-                                                        style="background-color:orange;color:#fff;"
-                                                        v-html="getCalcPercent(item.amplitude,item.amplitudeR)">
+                                            </td>
+                                            <td data-name="amplitude"
+                                                :data-refer="reportData.reportStatus!=3?item.amplitudeN:''"
+                                                :title="'正常值为:'+item.amplitudeR">
+                                                {{item.amplitude}}
+                                                <span class="badge pull-right"
+                                                      v-if="item.amplitudeR && reportData.reportStatus!=3"
+                                                      style="background-color:orange;color:#fff;"
+                                                      v-html="getCalcPercent(item.amplitude,item.amplitudeR)">
                                                     </span>
-                                                </td>
+                                            </td>
 
-                                            </tr>
-                                            <tr>
-                                                <td colspan="4" class="img-size"><b
-                                                        style="float:left;min-height:100px;">
-                                                        报告图片：</b><br>
-                                                    <img style="width:100%; display:inline-block"
-                                                        :src="imgBaseUrl+reportData.emgNo+'_'+key+'_0'+'_3'"
-                                                        :alt="key+'左侧'+'的图片没有'">
-                                                </td>
-                                            </tr>
+                                        </tr>
+                                        <tr>
+                                            <td colspan="4" class="img-size"><b
+                                                    style="float:left;min-height:100px;">
+                                                报告图片：</b><br>
+                                                <img style="width:100%; display:inline-block"
+                                                     :src="imgBaseUrl+reportData.emgNo+'_'+key+'_0'+'_3'"
+                                                     :alt="key+'左侧'+'的图片没有'">
+                                            </td>
+                                        </tr>
                                         </tbody>
 
                                     </table>
@@ -618,114 +618,114 @@
                     <table class="report-item table  table-bordered table-striped">
                         <caption>皮肤交感反应 (<span>SSR</span>)</caption>
                         <thead>
-                            <tr>
-                                <th width="20%" valign="middle">神经名称</th>
-                                <th width="20%">刺激点</th>
-                                <th width="20%">记录点</th>
-                                <th width="20%">潜伏期s</th>
-                                <th width="20%">峰值mV</th>
-                            </tr>
+                        <tr>
+                            <th width="20%" valign="middle">神经名称</th>
+                            <th width="20%">刺激点</th>
+                            <th width="20%">记录点</th>
+                            <th width="20%">潜伏期s</th>
+                            <th width="20%">峰值mV</th>
+                        </tr>
 
                         </thead>
                         <tbody>
 
-                            <template v-if="ssrList!=undefined && ssrList.length>0 && isCancelEdit==false">
-                                <tr v-for="(item,index) in ssrList" :key="index">
-                                    <td colspan="5" style="padding:0;">
-                                        <table class="ssr-table-data" style="width:100%; margin:0;padding:0;">
-                                            <tbody>
-                                                <tr>
-                                                    <td width="20%">{{item.nerveName}}</td>
-                                                    <td width="20%">{{item.stimPointPositionName}}</td>
-                                                    <td width="20%">{{item.collectPointPositionName}}</td>
-                                                    <td width="20%" style="color:#000;"
-                                                        :data-refer="reportData.reportStatus!=3?item.latencyPeriod1N:''"
-                                                        :title="'正常值为：'+item.latencyPeriod1R">
-                                                        {{item.latencyPeriod1}}
-                                                        <span v-if="item.latencyPeriod1R && reportData.reportStatus!=3"
-                                                            class="badge pull-right"
-                                                            style="background-color:orange;color:#fff;"
-                                                            v-html="getCalcPercent(item.latencyPeriod1,item.latencyPeriod1R)"></span>
-                                                    </td>
-                                                    <td width="20%" style="color:#000;"
-                                                        :data-refer="reportData.reportStatus!=3?item.vppN:''"
-                                                        :title="'正常值为：'+item.vppR">
-                                                        {{item.vpp}}
-                                                        <span v-if="item.vppR && reportData.reportStatus!=3"
-                                                            class="badge pull-right"
-                                                            style="background-color:orange;color:#fff;"
-                                                            v-html="getCalcPercent(item.vpp,item.vppR)"></span>
-                                                    </td>
-                                                </tr>
-                                                <tr v-if="isShowDetail">
-                                                    <td colspan="5" class="img-size"><b
-                                                            style="float:left;min-height:100px;">
-                                                            报告图片：</b><br>
-                                                        <img style="width:100%; display:inline-block"
-                                                            :src="'http://files.kfylt.cn/'+reportData.emgNo+'_7'"
-                                                            :alt="item.nerveName+'的图片没有找到'">
-                                                    </td>
-                                                </tr>
-                                            </tbody>
-                                        </table>
-                                    </td>
-                                </tr>
-                            </template>
-                            <template v-else-if="ssrList!=undefined && ssrList.length>0 && isCancelEdit">
-                                <tr v-for="(item,index) in ssrList" :key="index">
-                                    <td colspan="5" style="padding:0;">
-                                        <table class="ssr-table-data" style="width:100%; margin:0;padding:0;">
-                                            <tbody>
-                                                <tr>
-                                                    <td style="padding:8px;">
-                                                        <input type="text" name="project" value="ssr" hidden>
-                                                        <input type="text" name="nerveName"
-                                                            :value="item.nerveName!='-'?item.nerveName:''"
-                                                            class="form-control">
-                                                        <input type="text" hidden name="id" :value="item.id">
-                                                    </td>
-                                                    <td style="padding:8px;">
-                                                        <input type="text" name="stimPointPositionName"
-                                                            :value="item.stimPointPositionName!='-'?item.stimPointPositionName:''"
-                                                            class="form-control">
-                                                    </td>
-                                                    <td style="padding:8px;">
-                                                        <input type="text" name="collectPointPositionName"
-                                                            :value="item.collectPointPositionName!='-'?item.collectPointPositionName:''"
-                                                            class="form-control">
-                                                    </td>
-                                                    <td style="color:#000;padding:8px;"
-                                                        :data-refer="item.latencyPeriod1N"
-                                                        :title="'正常值为：'+item.latencyPeriod1R">
-                                                        <input type="text" name="latencyPeriod1"
-                                                            :value="item.latencyPeriod1!='-'?item.latencyPeriod1:''"
-                                                            class="form-control">
-                                                    </td>
-                                                    <td style="color:#000;padding:8px;" :data-refer="item.vppN"
-                                                        :title="'正常值为：'+item.vppR">
-                                                        <input type="text" name="vpp" :value="item.vpp!='-'?item.vpp:''"
-                                                            class="form-control">
-                                                    </td>
-                                                </tr>
-                                                <tr v-if="isShowDetail">
-                                                    <td colspan="5" class="img-size"><b
-                                                            style="float:left; min-height:100px;">
-                                                            报告图片：</b><br>
-                                                        <img style="width:100%; display:inline-block"
-                                                            :src="imgBaseUrl+reportData.emgNo+'_7'"
-                                                            :alt="item.nerveName+'的图片没有找到'">
-                                                    </td>
-                                                </tr>
-                                            </tbody>
-                                        </table>
-                                    </td>
-                                </tr>
-                            </template>
-                            <template v-else>
-                                <tr>
-                                    <td colspan="5" class="text-info">没有SSR的检查数据</td>
-                                </tr>
-                            </template>
+                        <template v-if="ssrList!=undefined && ssrList.length>0 && isCancelEdit==false">
+                            <tr v-for="(item,index) in ssrList" :key="index">
+                                <td colspan="5" style="padding:0;">
+                                    <table class="ssr-table-data" style="width:100%; margin:0;padding:0;">
+                                        <tbody>
+                                        <tr>
+                                            <td width="20%">{{item.nerveName}}</td>
+                                            <td width="20%">{{item.stimPointPositionName}}</td>
+                                            <td width="20%">{{item.collectPointPositionName}}</td>
+                                            <td width="20%" style="color:#000;"
+                                                :data-refer="reportData.reportStatus!=3?item.latencyPeriod1N:''"
+                                                :title="'正常值为：'+item.latencyPeriod1R">
+                                                {{item.latencyPeriod1}}
+                                                <span v-if="item.latencyPeriod1R && reportData.reportStatus!=3"
+                                                      class="badge pull-right"
+                                                      style="background-color:orange;color:#fff;"
+                                                      v-html="getCalcPercent(item.latencyPeriod1,item.latencyPeriod1R)"></span>
+                                            </td>
+                                            <td width="20%" style="color:#000;"
+                                                :data-refer="reportData.reportStatus!=3?item.vppN:''"
+                                                :title="'正常值为：'+item.vppR">
+                                                {{item.vpp}}
+                                                <span v-if="item.vppR && reportData.reportStatus!=3"
+                                                      class="badge pull-right"
+                                                      style="background-color:orange;color:#fff;"
+                                                      v-html="getCalcPercent(item.vpp,item.vppR)"></span>
+                                            </td>
+                                        </tr>
+                                        <tr v-if="isShowDetail">
+                                            <td colspan="5" class="img-size"><b
+                                                    style="float:left;min-height:100px;">
+                                                报告图片：</b><br>
+                                                <img style="width:100%; display:inline-block"
+                                                     :src="'http://files.kfylt.cn/'+reportData.emgNo+'_7'"
+                                                     :alt="item.nerveName+'的图片没有找到'">
+                                            </td>
+                                        </tr>
+                                        </tbody>
+                                    </table>
+                                </td>
+                            </tr>
+                        </template>
+                        <template v-else-if="ssrList!=undefined && ssrList.length>0 && isCancelEdit">
+                            <tr v-for="(item,index) in ssrList" :key="index">
+                                <td colspan="5" style="padding:0;">
+                                    <table class="ssr-table-data" style="width:100%; margin:0;padding:0;">
+                                        <tbody>
+                                        <tr>
+                                            <td style="padding:8px;">
+                                                <input type="text" name="project" value="ssr" hidden>
+                                                <input type="text" name="nerveName"
+                                                       :value="item.nerveName!='-'?item.nerveName:''"
+                                                       class="form-control">
+                                                <input type="text" hidden name="id" :value="item.id">
+                                            </td>
+                                            <td style="padding:8px;">
+                                                <input type="text" name="stimPointPositionName"
+                                                       :value="item.stimPointPositionName!='-'?item.stimPointPositionName:''"
+                                                       class="form-control">
+                                            </td>
+                                            <td style="padding:8px;">
+                                                <input type="text" name="collectPointPositionName"
+                                                       :value="item.collectPointPositionName!='-'?item.collectPointPositionName:''"
+                                                       class="form-control">
+                                            </td>
+                                            <td style="color:#000;padding:8px;"
+                                                :data-refer="item.latencyPeriod1N"
+                                                :title="'正常值为：'+item.latencyPeriod1R">
+                                                <input type="text" name="latencyPeriod1"
+                                                       :value="item.latencyPeriod1!='-'?item.latencyPeriod1:''"
+                                                       class="form-control">
+                                            </td>
+                                            <td style="color:#000;padding:8px;" :data-refer="item.vppN"
+                                                :title="'正常值为：'+item.vppR">
+                                                <input type="text" name="vpp" :value="item.vpp!='-'?item.vpp:''"
+                                                       class="form-control">
+                                            </td>
+                                        </tr>
+                                        <tr v-if="isShowDetail">
+                                            <td colspan="5" class="img-size"><b
+                                                    style="float:left; min-height:100px;">
+                                                报告图片：</b><br>
+                                                <img style="width:100%; display:inline-block"
+                                                     :src="imgBaseUrl+reportData.emgNo+'_7'"
+                                                     :alt="item.nerveName+'的图片没有找到'">
+                                            </td>
+                                        </tr>
+                                        </tbody>
+                                    </table>
+                                </td>
+                            </tr>
+                        </template>
+                        <template v-else>
+                            <tr>
+                                <td colspan="5" class="text-info">没有SSR的检查数据</td>
+                            </tr>
+                        </template>
                         </tbody>
                     </table>
                 </form>
@@ -736,102 +736,102 @@
                 <table class="table">
                     <caption>诊断意见</caption>
                     <tbody>
-                        <tr>
-                            <td>
-                                <div class="alert alert-danger report-check-result">
+                    <tr>
+                        <td>
+                            <div class="alert alert-danger report-check-result">
 
-                                    <ul v-for="(v,k) in diagnoseAdvice" :key="k">
-                                        <li>
-                                            {{k}}
-                                            <ul v-for="(item,index) in v" :key="index">
-                                                <li>
+                                <ul v-for="(v,k) in diagnoseAdvice" :key="k">
+                                    <li>
+                                        {{k}}
+                                        <ul v-for="(item,index) in v" :key="index">
+                                            <li>
                                                     <span
-                                                        style="min-width: 100px; display: inline-block;">{{item.projectItem}}</span>
-                                                    <span
+                                                            style="min-width: 100px; display: inline-block;">{{item.projectItem}}</span>
+                                                <span
                                                         style="min-width: 100px; display: inline-block;">{{item.handedness|turnToText2}}</span>
-                                                    <span
+                                                <span
                                                         style="min-width: 100px; display: inline-block;">{{item.nerveName}}</span>
-                                                    <span
+                                                <span
                                                         style="min-width: 100px; display: inline-block;">{{item.stimPointPositionName}}</span>
-                                                    <span
+                                                <span
                                                         style="min-width: 100px; display: inline-block;">{{item.collectPointPositionName}}</span>
-                                                    <span
+                                                <span
                                                         style="min-width: 100px; display: inline-block;">{{item.diagnosisTerm}}</span>
-                                                </li>
-                                            </ul>
-                                        </li>
-                                    </ul>
-                                </div>
-                            </td>
-                        </tr>
+                                            </li>
+                                        </ul>
+                                    </li>
+                                </ul>
+                            </div>
+                        </td>
+                    </tr>
                     </tbody>
                 </table>
                 <table class="table">
                     <caption>赋分</caption>
                     <tbody>
-                        <tr>
-                            <td>
-                                <div class="alert alert-success report-check-score">
-                                    <label>赋分结果：
-                                        <span class="label label-default"
-                                            style="background-color:black;">{{evaluate.result}}</span>
-                                    </label>
-                                    <label>赋分分数：
-                                        <span class="label label-default"
-                                            style="background-color:black;">{{evaluate.score}}</span>
-                                    </label>
-                                    <label>赋分等级：
-                                        <span class="label label-default"
-                                            style="background-color:black;">{{evaluate.level}}</span>
-                                    </label>
-                                </div>
-                            </td>
-                        </tr>
+                    <tr>
+                        <td>
+                            <div class="alert alert-success report-check-score">
+                                <label>赋分结果：
+                                    <span class="label label-default"
+                                          style="background-color:black;">{{evaluate.result}}</span>
+                                </label>
+                                <label>赋分分数：
+                                    <span class="label label-default"
+                                          style="background-color:black;">{{evaluate.score}}</span>
+                                </label>
+                                <label>赋分等级：
+                                    <span class="label label-default"
+                                          style="background-color:black;">{{evaluate.level}}</span>
+                                </label>
+                            </div>
+                        </td>
+                    </tr>
                     </tbody>
                 </table>
                 <table class="table">
                     <caption>检查结果</caption>
                     <tbody>
-                        <tr>
-                            <td colspan="7" class="advice">
+                    <tr>
+                        <td colspan="7" class="advice">
                                 <textarea name="advice" id="advice-message" readonly
-                                    style="text-align:left;text-indent: 0;">{{note|turnToText}}</textarea>
-                            </td>
-                        </tr>
+                                          style="text-align:left;text-indent: 0;">{{note|turnToText}}</textarea>
+                        </td>
+                    </tr>
                     </tbody>
                     <tfoot>
-                        <tr>
-                            <td colspan="5" class="col-sm-8 col-xs-8">
-                            </td>
-                            <td>
-                                <div class="form-group operate-doctor-name doctor-submit-name">
-                                    <label for="doctor-submit">提交医师</label>
-                                    <input type="text" class="form-control text-info alter-info" id="doctor-submit"
-                                        v-model="doctorNameOperate" readonly>
-                                </div>
-                            </td>
-                            <td>
-                                <div class="form-group operate-doctor-name doctor-confirm-name">
-                                    <label for="doctor-confirm">审核医师</label>
-                                    <input type="text" class="form-control text-info alter-info" id="doctor-confirm"
-                                        v-model="doctorNameDiagnosis" readonly>
-                                </div>
-                            </td>
-                            <!-- <td class="col-sm-2 col-xs-2">
+                    <tr>
+                        <td colspan="5" class="col-sm-8 col-xs-8">
+                        </td>
+                        <td>
+                            <div class="form-group operate-doctor-name doctor-submit-name">
+                                <label for="doctor-submit">提交医师</label>
+                                <input type="text" class="form-control text-info alter-info" id="doctor-submit"
+                                       v-model="doctorNameOperate" readonly>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="form-group operate-doctor-name doctor-confirm-name">
+                                <label for="doctor-confirm">审核医师</label>
+                                <input type="text" class="form-control text-info alter-info" id="doctor-confirm"
+                                       v-model="doctorNameDiagnosis" readonly>
+                            </div>
+                        </td>
+                        <!-- <td class="col-sm-2 col-xs-2">
 
-                            </td>
+                        </td>
 
-                            <td class="col-sm-1 col-xs-1"></td> -->
-                            <!-- <td class="col-sm-1 col-xs-1">
-                                <a :disabled="isSubmit" class="btn btn-primary no-print" id="report-current-btn"
-                                    type="button" @click="submitReport(5)">提交报告
-                                </a>
-                            </td> -->
-                            <!-- <td class="col-sm-1 col-xs-1">
-                                <a v-if="!isCancelEdit" :disabled="isDrawBack" class="btn btn-danger no-print"
-                                    id="report-current-return" type="button" @click="takeReportBack">退回报告</a>
-                            </td> -->
-                        </tr>
+                        <td class="col-sm-1 col-xs-1"></td> -->
+                        <!-- <td class="col-sm-1 col-xs-1">
+                            <a :disabled="isSubmit" class="btn btn-primary no-print" id="report-current-btn"
+                                type="button" @click="submitReport(5)">提交报告
+                            </a>
+                        </td> -->
+                        <!-- <td class="col-sm-1 col-xs-1">
+                            <a v-if="!isCancelEdit" :disabled="isDrawBack" class="btn btn-danger no-print"
+                                id="report-current-return" type="button" @click="takeReportBack">退回报告</a>
+                        </td> -->
+                    </tr>
                     </tfoot>
                 </table>
             </div>
@@ -1166,7 +1166,8 @@
                 isCancelEdit: false,
                 note: '',
                 num: 0,
-                imgBaseUrl: 'http://files.kfylt.cn/'
+                imgBaseUrl: 'http://files.kfylt.cn/',
+                curRoleId: '',
             }
         },
         filters: {
@@ -1244,64 +1245,89 @@
         },
         computed: {
             listenAuthorityAndReportStatus() {
-
-                let authority = JSON.parse(localStorage.authorities)[1].roleCode;
-                let status = this.reportData.reportStatus
-                switch (authority) {
-                    case 'ROLE_ROLE1':
-                        //超级管理员所有的权利
-                        var power = [1, 2, 3, 4];
-                        if (power.indexOf(status) != -1) {
-                            this.getOperatorButton(status);
+                let authority;
+                if (this.checkGroup != '') {
+                    if(this.curRoleId){
+                        switch (this.curRoleId) {
+                            case 1:
+                                authority = 'ROLE_ROLE1';
+                                break;
+                            case 16:
+                                authority = 'ROLE_ROLE02'
+                                break;
+                            case 17:
+                                authority = 'ROLE_ROLE03'
+                                break;
+                            case 18:
+                                authority = 'ROLE_ROLE04'
+                                break;
+                            case 19:
+                                authority = 'ROLE_ROLE05'
+                                break;
                         }
-
-                        break
-                    case 'ROLE_ROLE02':
-                        //二级权限所用的权利
-                        var power = [1, 2];
-                        if (power.indexOf(status) != -1) {
-                            this.getOperatorButton(status);
-                        }
-
-                        break
-                    case 'ROLE_ROLE03':
-                        //三级权限人员所用的权利
-
-                        var power = [3, 4];
-                        if (power.indexOf(status) != -1) {
-
-                            this.getOperatorButton(status);
-                        }
-                        $('#report-current-return').hide();
-                        $('#report-current-btn').hide();
-                        break
-                    case 'ROLE_ROLE04':
-                        //四级权限人员的权利
-                        var power = [2, 4];
-
-                        if (power.indexOf(status) != -1) {
-                            this.getOperatorButton(status);
-                            this.isConfirmAgain = false;
-                            this.isConfirm = false;
-                            this.isEdit = false;
-                        }
-                        $('#report-current-return').hide()
-                        $('#report-current-btn').hide()
-                        break
-                    case 'ROLE_ROLE05':
-                        //五级权限人员的权利
-                        var power = [2];
-                        if (power.indexOf(status) != -1) {
-                            this.getOperatorButton(status);
-                            this.isConfirmAgain = false;
-                            this.isConfirm = false;
-                            this.isEdit = false;
-                        }
-                        $('#report-current-return').hide()
-                        $('#report-current-btn').hide()
-                        break
-
+                    }
+                }else{
+                    authority = JSON.parse(localStorage.authorities)[1].roleCode;
                 }
+                let status = this.reportData.reportStatus
+                if(authority!=undefined){
+                    switch (authority) {
+                        case 'ROLE_ROLE1':
+                            //超级管理员所有的权利
+                            var power = [1, 2, 3, 4];
+                            if (power.indexOf(status) != -1) {
+                                this.getOperatorButton(status);
+                            }
+
+                            break
+                        case 'ROLE_ROLE02':
+                            //二级权限所用的权利
+                            var power = [1, 2];
+                            if (power.indexOf(status) != -1) {
+                                this.getOperatorButton(status);
+                            }
+
+                            break
+                        case 'ROLE_ROLE03':
+                            //三级权限人员所用的权利
+
+                            var power = [3, 4];
+                            if (power.indexOf(status) != -1) {
+
+                                this.getOperatorButton(status);
+                            }
+                            $('#report-current-return').hide();
+                            $('#report-current-btn').hide();
+                            break
+                        case 'ROLE_ROLE04':
+                            //四级权限人员的权利
+                            var power = [2, 4];
+
+                            if (power.indexOf(status) != -1) {
+                                this.getOperatorButton(status);
+                                this.isConfirmAgain = false;
+                                this.isConfirm = false;
+                                this.isEdit = false;
+                            }
+                            $('#report-current-return').hide()
+                            $('#report-current-btn').hide()
+                            break
+                        case 'ROLE_ROLE05':
+                            //五级权限人员的权利
+                            var power = [2];
+                            if (power.indexOf(status) != -1) {
+                                this.getOperatorButton(status);
+                                this.isConfirmAgain = false;
+                                this.isConfirm = false;
+                                this.isEdit = false;
+                            }
+                            $('#report-current-return').hide()
+                            $('#report-current-btn').hide()
+                            break
+
+                    }
+                }
+
                 return {
                     isEdit: this.isEdit,
                     isDownload: this.isDownload,
@@ -1334,6 +1360,7 @@
                     })
                     mcvLeftOptions[attr] = ret;
                 }
+
                 return {
                     right: mcvRightOptions,
                     left: mcvLeftOptions
@@ -1368,7 +1395,6 @@
                     left: scvLeftOptions
                 }
             },
-
 
         },
         methods: {
@@ -1434,13 +1460,11 @@
             },
             //数据格式转换(mcv,scv)
             turnDataFormat1(type, arr) {
-                arr.forEach((item, index, array) => {
+                let arr2=[...arr]
+                arr2.forEach((item, index, array) => {
                     array.forEach((item2, index2) => {
                         let temp = {}
-                        if (item.handedness != item2.handedness && item.nerveName == item2
-                            .nerveName && item.collectPointPositionName == item2
-                            .collectPointPositionName && item.stimPointPositionName == item2
-                            .stimPointPositionName) {
+                        if (item.handedness != item2.handedness && item.nerveName == item2.nerveName && item.collectPointPositionName == item2.collectPointPositionName && item.stimPointPositionName == item2.stimPointPositionName) {
                             temp.idLeft = item.id;
                             temp.idRight = item2.id;
                             temp.collectPointPositionName = item
@@ -1679,7 +1703,6 @@
                         }
                     }
                 }
-
             },
             //分析的参考值和已经有的数据匹配
             matchDataByAnalysis(data) {
@@ -1715,6 +1738,7 @@
                 }
                 this.turnDataFormat1('mcv', this.mcvList)
                 this.turnDataFormat1('scv', this.scvList)
+
             },
             //根据报告的编号获取报告数据
             getCurrentReportScore(path) {
@@ -1722,6 +1746,7 @@
                 options['mcv'] = [];
                 options['ssr'] = [];
                 options['scv'] = [];
+
                 this.mcvList.forEach((item, index) => {
                     options['mcv'].push(item.programDataId)
                 })
@@ -1757,6 +1782,7 @@
                 let ret1 = [];
                 let ret2 = [];
                 let ret3 = [];
+
                 this.mcvList.forEach((mcvItem, indexM) => {
                     ret1 = this.advice.filter((item, index) => {
                         return item.nerveId == mcvItem.nerveId
@@ -1789,6 +1815,7 @@
             },
             //遍历数组，匹配nerveId值
             getDiagnoseAdvice(type, obj) {
+
                 let tempData = {}
                 switch (type) {
                     case 'mcv':
@@ -1800,11 +1827,13 @@
                                     for (var j = 0; j < tempData['MCV'].length; j++) {
                                         if (this.mcvList[j].nerveId == tempData['MCV'][j]
                                             .nerveId && this.mcvList[j].nerveName == tempData[
-                                                'MCV'][j].nerveName && this.mcvList[j]
+                                            'MCV'][j].nerveName && this.mcvList[j]
                                             .handedness == tempData['MCV'][j].handedness) {
                                             flag = false;
-                                        };
-                                    };
+                                        }
+                                        ;
+                                    }
+                                    ;
                                     if (flag) {
                                         let options = {}
                                         options.nerveId = mItem.nerveId
@@ -1818,7 +1847,8 @@
                                         options.diagnosisTerm = item.diagnosisTerm.trim() ||
                                             '暂无诊断分析结果';
                                         tempData['MCV'].push(options)
-                                    };
+                                    }
+                                    ;
                                 }
                             })
                         })
@@ -1832,11 +1862,13 @@
                                     for (var j = 0; j < tempData['SCV'].length; j++) {
                                         if (this.scvList[j].nerveId == tempData['SCV'][j]
                                             .nerveId && this.scvList[j].nerveName == tempData[
-                                                'SCV'][j].nerveName && this.scvList[j]
+                                            'SCV'][j].nerveName && this.scvList[j]
                                             .handedness == tempData['SCV'][j].handedness) {
                                             flag = false;
-                                        };
-                                    };
+                                        }
+                                        ;
+                                    }
+                                    ;
                                     if (flag) {
                                         let options = {}
                                         options.nerveId = sItem.nerveId
@@ -1850,7 +1882,8 @@
                                         options.diagnosisTerm = item.diagnosisTerm.trim() ||
                                             '暂无诊断分析结果';
                                         tempData['SCV'].push(options)
-                                    };
+                                    }
+                                    ;
                                 }
                             })
                         })
@@ -1864,11 +1897,13 @@
                                     for (var j = 0; j < tempData['SSR'].length; j++) {
                                         if (this.ssrList[j].nerveId == tempData['SSR'][j]
                                             .nerveId && this.ssrList[j].nerveName == tempData[
-                                                'SSR'][j].nerveName && this.ssrList[j]
+                                            'SSR'][j].nerveName && this.ssrList[j]
                                             .handedness == tempData['SSR'][j].handedness) {
                                             flag = false;
-                                        };
-                                    };
+                                        }
+                                        ;
+                                    }
+                                    ;
                                     if (flag) {
                                         let options = {}
                                         options.nerveId = rItem.nerveId
@@ -1882,7 +1917,8 @@
                                         options.diagnosisTerm = item.diagnosisTerm.trim() ||
                                             '暂无诊断分析结果';
                                         tempData['SSR'].push(options)
-                                    };
+                                    }
+                                    ;
 
                                 }
                             })
@@ -1913,8 +1949,8 @@
             },
             //获取查询的报告
             getAllTableList({
-                ...args
-            }) {
+                                ...args
+                            }) {
                 return new Promise((resolve, reject) => {
 
                     Shinez.get(`/check/data`, args, (ret) => {
@@ -1931,6 +1967,21 @@
                     })
                 })
             },
+            //当checkGroup不为空字符串时，表示的是从群组获取的报告，获取当前操作者在群组中的权限
+            getCurrentDocAuthInGroup() {
+                let id = JSON.parse(sessionStorage.doctorInfo).id;
+                return new Promise((resolve, reject) => {
+                    Shinez.get(`/group/groupDoctor?doctorId=${id}`, (ret) => {
+                        if (ret.code != 0) {
+                            reject(`获取当前操作者的roleId出错,${ret.msg}`)
+                        } else {
+                            resolve(ret.data.arrayList)
+                        }
+                    })
+                })
+
+            },
+
             //获取登录时路由的哈希值
             getHistoryParams() {
                 var queryStr = history.state.params;
@@ -1944,6 +1995,10 @@
                             params[sItems[0]] = sItems[1];
                         }
                     }
+                    if (params.checkGroup != '') {
+                        this.checkGroup = params.checkGroup
+                    }
+
                     this.pageIndex = params.pageIndex;
                     this.pageSize = params.pageSize;
                     this.emgNo = params.emgNo;
@@ -1960,35 +2015,49 @@
                         return this.getCurrentPatient('/basic/patient/')
                     }).then(data => {
                         this.patientInfo = data;
+
                     }).catch(err => {
                         Shinez.tip('error', err)
                     });
-                    this.getAsyncReportContent(`/check/report/${this.emgNo}`).then(data => {
-                            for (let [key, val] of Object.entries(data)) {
-                                if (key.toLowerCase() == 'mcv') {
-                                    this.mcvList = val;
-
-                                }
-                                if (key.toLowerCase() == 'ssr') {
-                                    this.ssrList = val;
-                                }
-                                if (key.toLowerCase() == 'scv') {
-                                    this.scvList = val;
-                                }
+                    this.getAsyncReportContent(`/check/report/${this.emgNo}`).then(datas => {
+                        for (let [key, val] of Object.entries(datas)) {
+                            if (key.toLowerCase() == 'mcv') {
+                                this.mcvList = val;
                             }
-                            return this.getCurrentReportScore('/ruler/reference/analysis')
-                        }).then(data => {
-                            this.evaluate = data.evaluate;
-                            //处理获得的分析结果，和已经获得的检查类型匹配
-                            this.matchDataByAnalysis(data)
-                            return this.diagnoseAdviceFnAsync(`/terms/all`)
-                        }).then(dat => {
-                            this.advice = dat;
-                            this.changeDataByAdvice()
-                        })
+                            if (key.toLowerCase() == 'ssr') {
+                                this.ssrList = val;
+                            }
+                            if (key.toLowerCase() == 'scv') {
+                                this.scvList = val;
+                            }
+                        }
+                        return this.getCurrentReportScore('/ruler/reference/analysis')
+                    }).then(data => {
+                        this.evaluate = data.evaluate;
+                        //处理获得的分析结果，和已经获得的检查类型匹配
+                        this.matchDataByAnalysis(data)
+                        return this.diagnoseAdviceFnAsync(`/terms/all`)
+                    }).then(dat => {
+                        this.advice = dat;
+                        this.changeDataByAdvice()
+                    })
                         .catch(err => {
                             Shinez.tip('error', err)
+                        });
+
+                    if(this.checkGroup!=""){
+                        this.getCurrentDocAuthInGroup().then(ret => {
+                            if (ret.length > 0) {
+                                let result = ret.find((item, index) => {
+                                    return item.groupNo == this.checkGroup
+                                })
+                                this.curRoleId = result.roleId
+
+                            }
+                        }).catch(err => {
+                            Shinez.tip('error', `${err}`)
                         })
+                    }
 
                 } else {
                     Shinez.tip('error', '需要查询的报告不存在')
@@ -2191,7 +2260,7 @@
             },
             //下载报告
             downloadReport() {
-                let name = (this.reportData.patientName) + ` —— ${this.isShowDetail?'详细报告':'简单报告'} `
+                let name = (this.reportData.patientName) + ` —— ${this.isShowDetail ? '详细报告' : '简单报告'} `
 
                 var $obj = $("#report-container").clone();
                 $obj.find('td[class=advice]').text($('#advice-message').val());

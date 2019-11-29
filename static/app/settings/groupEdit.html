@@ -10,7 +10,7 @@
         </div>
         <div class="group">
             <label>组长:</label>
-            <select class="form-control inline" style="width:300px;" name="chooseCreator" v-model="createDoctorId"
+            <select :disabled="!isRole1" class="form-control inline" style="width:300px;" name="chooseCreator" v-model="createDoctorId"
                     @change="changeCreatorById($event)" @focus="alertChangeCreatorWin($event)">
                 <template v-if="doctorInGroup.length>0">
                     <option v-for="(item,index) in doctorInGroup" :key="index" :value="item.id">{{item.doctorName}}
@@ -21,7 +21,7 @@
         <div class="group" style="border-bottom:none;padding-bottom:0;">
             <label>群组成员选择:</label>
             <select name="doctorName" id="doctorName" class="form-control inline"
-                    style="width:240px; vertical-align: middle;" v-model="doctorName">
+                    style="width:240px; vertical-align: middle;" v-model="doctorName" >
                 <option value="">-- 请选择 --</option>
                 <template v-for="(item,index) in doctorinfo">
                     <option :value="item.doctorName" v-if="item.doctorName!=groupCreator">{{item.doctorName}}</option>
@@ -46,7 +46,7 @@
                         <td>{{item.doctorName}}</td>
                         <td>
                             <select v-if="item.roleId!=1" class="form-control inline"
-                                    :disabled="item.doctorName==groupCreator && !isRole1"
+                                    :disabled="item.doctorName==groupCreator || !isRole1"
                                     style="width:240px;" ref="roleId" :value="item.roleId||'16'"
                                     @change="addDoctorInfoRoleId($event,index)">
                                 <option v-for="(role,index) in roleList" :key="index" :value="role.id">
@@ -77,7 +77,7 @@
         </div>
         <div class="group">
             <label>群组中的报告集</label>
-            <button v-if="isRole1" class="btn btn-info btn-sm" data-toggle="modal" data-target="#myModal"
+            <button v-if="isAddReport" class="btn btn-info btn-sm" data-toggle="modal" data-target="#myModal"
                     @click="getAllCheckList">添加报告
             </button>
             <table class="table table-bordered table-hover table-striped">
@@ -110,7 +110,7 @@
                 </tbody>
             </table>
         </div>
-        <div class="group" style="border-bottom:none;" v-if="isRole1">
+        <div class="group" style="border-bottom:none;">
             <button class="btn  btn-success" @click="saveDataToStore">保存</button>&nbsp;&nbsp;&nbsp;&nbsp;<button
                 class="btn  btn-default" @click="returnBack">取消
         </button>
@@ -212,12 +212,20 @@
 
                 groupOperator.doctorInGroup[result].roleId = 16;
                 groupOperator.doctorInGroup.forEach((item, index, array) => {
+                    let temp;
                     if (item.id == groupOperator.createDoctorId) {
                         item.roleId = 1
+                        temp=array[0];
+                        array[0]=item;
+                        array[index]=temp;
                     }
 
-                })
+                });
+                //检查权限
+                groupOperator.checkOutAuthority()
                 $('#passAuth').modal('hide');
+                //保存更改后的数据
+                //groupOperator.saveDataToStore()
             },
             cancelPassAuth(){
 
@@ -269,6 +277,7 @@
                 id: 0,
                 reportTotalList: [],
                 isRole1: true,
+                isAddReport:true,
                 oldId: '',
                 newId: '',
             }
@@ -413,17 +422,6 @@
                                 Shinez.tip('error', '编辑出错了:${ret.msg}')
                             }
                         })
-                    } else {
-                        Shinez.post('/group', params, (ret) => {
-                            if (ret.code == 0) {
-                                Shinez.tip('success', '添加成功')
-                                setTimeout(() => {
-                                    this.returnBack()
-                                }, 100)
-                            } else {
-                                Shinez.tip('error', '增加群组出错了:${ret.msg}')
-                            }
-                        })
                     }
                 }
 
@@ -512,6 +510,9 @@
                                     this.doctorInGroup = ret.data.page.list[0].doctorInfoList
                                     this.groupName = ret.data.page.list[0].groupName;
                                     this.id = ret.data.page.list[0].id;
+
+                                    //检查权限
+                                    this.checkOutAuthority()
                                 } else {
                                     Shinez.tip('warning', '查看的群组中没有相关数据信息')
                                 }
@@ -525,12 +526,26 @@
 
             //检查权限
             checkOutAuthority() {
-                let userRole = JSON.parse(localStorage.authorities)[1].roleCode;
-                if ((/role1/gi).test(userRole)) {
-                    this.isRole1 = true
-                } else {
-                    this.isRole1 = false;
+                let curLoginDocId=JSON.parse(sessionStorage.doctorInfo).id;
+                let result=this.doctorInGroup.find((item,index)=>{
+                    return item.id==curLoginDocId
+                })
+                if(result.roleId!=19){
+                    this.isAddReport=true
+                }else{
+                    this.isAddReport=false;
                 }
+                if(this.createDoctorId!=curLoginDocId){
+                    this.isRole1=false;
+                }else{
+                    let userRole = JSON.parse(localStorage.authorities)[1].roleCode;
+                    if ((/role1/gi).test(userRole)) {
+                        this.isRole1 = true
+                    } else {
+                        this.isRole1 = false;
+                    }
+                }
+
             },
             //onblur时弹出确定变更组长的弹窗
             alertChangeCreatorWin(ev) {
@@ -546,21 +561,10 @@
                     //触发键盘esc事件时不关闭。
                 })
                 $('#passAuth').modal('show');
-                /*let result = this.doctorInGroup.findIndex((item, index) => {
-                    return item.roleId == 1
-                });
-
-                this.doctorInGroup[result].roleId = 16;
-                this.doctorInGroup.forEach((item, index, array) => {
-                    if (item.id == this.createDoctorId) {
-                        item.roleId = 1
-                    }
-
-                })*/
             }
         },
         mounted() {
-            this.checkOutAuthority();
+            //this.checkOutAuthority();
             this.loadOperatorPage();
             this.getAllDoctorInfo()
             this.getRoleName();
