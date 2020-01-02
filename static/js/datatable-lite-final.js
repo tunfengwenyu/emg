@@ -909,7 +909,6 @@ var DataTable = function () {
                                 }
                             });
                             var items=getJSONObj($(modal).find("#" +v.modalId),$(modal).find("#" +v.modalId).find("form").serializeArray());
-                            
                             Shinez.post(v.url,items , function (ret) {
                                 
                                 if (ret.code == 0) {

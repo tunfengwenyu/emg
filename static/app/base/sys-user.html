@@ -67,14 +67,14 @@
                             <tr>
                                 <th>密码设置</th>
                                 <td colspan="3">
-                                    <input class=" input-medium form-control inline " type="pwd" name="pwd" maxlength="16" value="123456">
+                                    <input class="inputtime input-medium form-control inline " type="pwd" name="pwd" maxlength="16" value="123456">
                                     <span class="required-star">* </span>
                                 </td>
                             </tr>
                             <tr style="display:none">
                                 <th>联系电话</th>
                                 <td colspan="3">
-                                    <input class=" input-medium form-control inline " type="text" name="tel" value="13678789955">
+                                    <input class="inputtime input-medium form-control inline " type="text" name="tel" value="13678789955">
                                 </td>
                             </tr>
                             <tr>
@@ -150,7 +150,7 @@
                             <tr style="display:none">
                                 <th>联系电话</th>
                                 <td colspan="3">
-                                    <input class=" input-medium form-control inline " type="text" name="tel" value="">
+                                    <input class="inputtime input-medium form-control inline " type="text" name="tel" value="13678789955">
                                 </td>
                             </tr>
                             <tr>
@@ -267,7 +267,9 @@
     var resource = "/main/sys-user";
     var aDoctorInfoId=[];
     $(function () {
-        getAllUserInfo();
+        getAllUserInfo(function(data){
+            aDoctorInfoId=data;
+        });
         DataTable.init({
             url: resource, //ajax请求url
             tableName: "data-table", //数据表table id
@@ -360,12 +362,10 @@
 
         $('#modal-add').find('select[name=nickname]').on('change',function(e){
             var result=e.target.value
-            getAllUserInfo(function(args){
-                args.forEach((item,index)=>{
-                    if(item.doctorName===result){
-                        $('#modal-add').find('input[name=doctorInfoId]').val(item.doctorInfoId)
-                    }
-                })
+            aDoctorInfoId.forEach((item,index)=>{
+                if(item.doctorName===result){
+                    $('#modal-add').find('input[name=doctorInfoId]').val(item.doctorInfoId)
+                }
             })
         });
 
@@ -415,7 +415,7 @@
                 });
                 columnVal += "</select>";
                 $("#modal-add,#modal-edit").find("table").append("<tr data-code='BY_institution_no' class='tr-role-config' style='display: none'>" +
-                    "<th><input type='hidden' name='dataRoles[0].dataRoleCode' value='BY_institution_no'>医院名称：</th>" +
+                    "<th><input class='inputtime' type='hidden' name='dataRoles[0].dataRoleCode' value='BY_institution_no'>医院名称：</th>" +
                     //                "<td>"+v.tableName+"</td>" +
                     //                "<td>"+v.columnName+"</td>" +
                     "<td>" + columnVal + "</td></tr>");
@@ -429,6 +429,8 @@
         $("tr[data-code]").find("*[name*=columnValue]").val("").change();
         var dataRoleStatus = $("tr[data-id=" + obj + "]").find("td[data-name=enableDataRole]").attr("data-value");
         $(".tr-role-config").find("*[name*=columnValue]").val("");
+        $(".tr-role-config").find("*[name*=dataRoleCode]").val("BY_institution_no");
+        $('input[name=tel]').val('13678789955')
         if (dataRoleStatus == "true" || dataRoleStatus == true || dataRoleStatus == "1" || dataRoleStatus == 1) { //如果有数据权限
             Shinez.get("/main/sys-user/" + obj + "/data-role", function (ret) {
                 if (ret.code == 0) {
@@ -442,15 +444,19 @@
         } else {
             $("*[name=enableDataRole]").bootstrapSwitch("state", false);
         }
+        let ret=$('#modal-edit').find('select[name=nickname]').val()
+        aDoctorInfoId.forEach((item,index)=>{
+            if(item.doctorName===ret){
+                $('#modal-edit').find('input[name=doctorInfoId]').val(item.doctorInfoId)
+            }
+        })
 
         $('#modal-edit').find('select[name=nickname]').on('change',function(e){
             var result=e.target.value
-            getAllUserInfo(function(args){
-                args.forEach((item,index)=>{
-                    if(item.doctorName===result){
-                        $('#modal-edit').find('input[name=doctorInfoId]').val(item.doctorInfoId)
-                    }
-                })
+            aDoctorInfoId.forEach((item,index)=>{
+                if(item.doctorName===result){
+                    $('#modal-edit').find('input[name=doctorInfoId]').val(item.doctorInfoId)
+                }
             })
         })
 
@@ -467,12 +473,14 @@
 
     //获取医师人员的信息
     function getAllUserInfo(callback){
+        let arr=[]
+        $('select[name=nickname]').empty().append('<option value="">--请选择--</option>')
         Shinez.get('/basic/allDoctor',function(ret){
             $.each(ret,function(k,v){
                 $('select[name=nickname]').append('<option value="'+ v.doctorName+'">'+ v.doctorName+'</option>')
-                aDoctorInfoId.push({doctorInfoId:v.id,doctorName:v.doctorName})
+                arr.push({doctorInfoId:v.id,doctorName:v.doctorName})
             })
-            callback&&callback(aDoctorInfoId)
+            callback&&callback(arr)
         })
     }
 </script>
