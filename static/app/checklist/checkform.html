@@ -563,7 +563,7 @@
                 let date = new Date(val)
                 let years = date.getFullYear()
                 let month = date.getMonth() + 1
-                let daily = date.getDay()
+                let daily = date.getDate()
                 month = month < 10 ? '0' + month : month;
                 daily = daily < 10 ? '0' + daily : daily;
                 return years + '-' + month + '-' + daily

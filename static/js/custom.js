@@ -5,8 +5,8 @@
 var sRootName = '/';
 
 const custom = {
-    domain: "http://172.16.4.128/emg",
-    //domain: "http://cms-source.kfylt.cn/emg",
+    //domain: "http://172.16.4.128/emg",
+    domain: "http://cms-source.kfylt.cn/emg",
     
     authAlias: "NccMedical",
     authHeader: "Authorization"

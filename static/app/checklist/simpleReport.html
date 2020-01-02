@@ -1782,23 +1782,36 @@
                 let ret1 = [];
                 let ret2 = [];
                 let ret3 = [];
-
                 this.mcvList.forEach((mcvItem, indexM) => {
-                    ret1 = this.advice.filter((item, index) => {
+                    let result  = this.advice.find((item, index) => {
                         return item.nerveId == mcvItem.nerveId
                     })
+                    if(result!=undefined){
+                        ret1.push(result)
+                    }
+
                 });
                 this.scvList.forEach((scvItem, indexs) => {
 
-                    ret2 = this.advice.filter((item, index) => {
+                    let result = this.advice.find((item, index) => {
                         return item.nerveId == scvItem.nerveId
                     })
+                    if(result!=undefined){
+                        ret2.push(result)
+                    }
+
+
                 });
                 this.ssrList.forEach((ssrItem, indexr) => {
 
-                    ret3 = this.advice.filter((item, index) => {
+                    let result = this.advice.find((item, index) => {
                         return item.nerveId == ssrItem.nerveId
                     })
+                    if(result!=undefined){
+                        ret3.push(result)
+                    }
+
+
                 })
                 if (ret1.length > 0) {
                     this.diagnoseAdvice['mcv'] = [];
@@ -1812,6 +1825,7 @@
                     this.diagnoseAdvice['ssr'] = [];
                     this.getDiagnoseAdvice('ssr', ret3)
                 }
+
             },
             //遍历数组，匹配nerveId值
             getDiagnoseAdvice(type, obj) {
@@ -1823,32 +1837,19 @@
                         obj.forEach((item, index) => {
                             this.mcvList.forEach((mItem, mIndex) => {
                                 if (item.nerveId == mItem.nerveId) {
-                                    var flag = true;
-                                    for (var j = 0; j < tempData['MCV'].length; j++) {
-                                        if (this.mcvList[j].nerveId == tempData['MCV'][j]
-                                            .nerveId && this.mcvList[j].nerveName == tempData[
-                                            'MCV'][j].nerveName && this.mcvList[j]
-                                            .handedness == tempData['MCV'][j].handedness) {
-                                            flag = false;
-                                        }
-                                        ;
-                                    }
-                                    ;
-                                    if (flag) {
-                                        let options = {}
-                                        options.nerveId = mItem.nerveId
-                                        options.handedness = mItem.handedness;
-                                        options.nerveName = mItem.nerveName;
-                                        options.projectItem = type;
-                                        options.stimPointPositionName = mItem
-                                            .stimPointPositionName;
-                                        options.collectPointPositionName = mItem
-                                            .collectPointPositionName;
-                                        options.diagnosisTerm = item.diagnosisTerm.trim() ||
-                                            '暂无诊断分析结果';
-                                        tempData['MCV'].push(options)
-                                    }
-                                    ;
+                                    obj.splice(index,1)
+                                    let options = {}
+                                    options.nerveId = mItem.nerveId
+                                    options.handedness = mItem.handedness;
+                                    options.nerveName = mItem.nerveName;
+                                    options.projectItem = type;
+                                    options.stimPointPositionName = mItem
+                                        .stimPointPositionName;
+                                    options.collectPointPositionName = mItem
+                                        .collectPointPositionName;
+                                    options.diagnosisTerm = item.diagnosisTerm.trim() ||
+                                        '暂无诊断分析结果';
+                                    tempData['MCV'].push(options)
                                 }
                             })
                         })
@@ -1858,32 +1859,19 @@
                         obj.forEach((item, index) => {
                             this.scvList.forEach((sItem, sIndex) => {
                                 if (item.nerveId == sItem.nerveId) {
-                                    var flag = true;
-                                    for (var j = 0; j < tempData['SCV'].length; j++) {
-                                        if (this.scvList[j].nerveId == tempData['SCV'][j]
-                                            .nerveId && this.scvList[j].nerveName == tempData[
-                                            'SCV'][j].nerveName && this.scvList[j]
-                                            .handedness == tempData['SCV'][j].handedness) {
-                                            flag = false;
-                                        }
-                                        ;
-                                    }
-                                    ;
-                                    if (flag) {
-                                        let options = {}
-                                        options.nerveId = sItem.nerveId
-                                        options.handedness = sItem.handedness || '';
-                                        options.nerveName = sItem.nerveName || '';
-                                        options.projectItem = type;
-                                        options.stimPointPositionName = sItem
-                                            .stimPointPositionName;
-                                        options.collectPointPositionName = sItem
-                                            .collectPointPositionName;
-                                        options.diagnosisTerm = item.diagnosisTerm.trim() ||
-                                            '暂无诊断分析结果';
-                                        tempData['SCV'].push(options)
-                                    }
-                                    ;
+                                    obj.splice(index,1)
+                                    let options = {}
+                                    options.nerveId = sItem.nerveId
+                                    options.handedness = sItem.handedness;
+                                    options.nerveName = sItem.nerveName;
+                                    options.projectItem = type;
+                                    options.stimPointPositionName = sItem
+                                        .stimPointPositionName;
+                                    options.collectPointPositionName = sItem
+                                        .collectPointPositionName;
+                                    options.diagnosisTerm = item.diagnosisTerm.trim() ||
+                                        '暂无诊断分析结果';
+                                    tempData['SCV'].push(options)
                                 }
                             })
                         })
@@ -1893,32 +1881,19 @@
                         obj.forEach((item, index) => {
                             this.ssrList.forEach((rItem, rIndex) => {
                                 if (item.nerveId == rItem.nerveId) {
-                                    var flag = true;
-                                    for (var j = 0; j < tempData['SSR'].length; j++) {
-                                        if (this.ssrList[j].nerveId == tempData['SSR'][j]
-                                            .nerveId && this.ssrList[j].nerveName == tempData[
-                                            'SSR'][j].nerveName && this.ssrList[j]
-                                            .handedness == tempData['SSR'][j].handedness) {
-                                            flag = false;
-                                        }
-                                        ;
-                                    }
-                                    ;
-                                    if (flag) {
-                                        let options = {}
-                                        options.nerveId = rItem.nerveId
-                                        options.handedness = rItem.handedness;
-                                        options.nerveName = rItem.nerveName;
-                                        options.projectItem = type;
-                                        options.stimPointPositionName = rItem
-                                            .stimPointPositionName;
-                                        options.collectPointPositionName = rItem
-                                            .collectPointPositionName;
-                                        options.diagnosisTerm = item.diagnosisTerm.trim() ||
-                                            '暂无诊断分析结果';
-                                        tempData['SSR'].push(options)
-                                    }
-                                    ;
+                                    obj.splice(index,1)
+                                    let options = {}
+                                    options.nerveId = rItem.nerveId
+                                    options.handedness = rItem.handedness;
+                                    options.nerveName = rItem.nerveName;
+                                    options.projectItem = type;
+                                    options.stimPointPositionName = rItem
+                                        .stimPointPositionName;
+                                    options.collectPointPositionName = rItem
+                                        .collectPointPositionName;
+                                    options.diagnosisTerm = item.diagnosisTerm.trim() ||
+                                        '暂无诊断分析结果';
+                                    tempData['SSR'].push(options)
 
                                 }
                             })
