@@ -90,7 +90,7 @@ function showDiffColor(args){
             return '<span class="show-color" style="background-color:#999;">未统计</span>'
             break;
         case '5':
-            return '<span class="show-color" style="background-color:##327d34;">正常(较另一侧上升)</span>'
+            return '<span class="show-color" style="background-color:#327d34;">正常(较另一侧上升)</span>'
             break;
         case '6':
             return '<span class="show-color" style="background-color:#16e01c;">正常(较另一侧下降)</span>'

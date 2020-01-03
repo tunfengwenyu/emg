@@ -738,25 +738,26 @@
                     <tbody>
                     <tr>
                         <td>
-                            <div class="alert alert-danger report-check-result">
+                            <div v-for="(obj,index) in diagnoseAdvice" :key="index" class="alert alert-danger report-check-result">
 
-                                <ul v-for="(v,k) in diagnoseAdvice" :key="k">
+                                <ul v-for="(v,k) in obj" :key="k">
                                     <li>
                                         {{k}}
                                         <ul v-for="(item,index) in v" :key="index">
                                             <li>
                                                     <span
-                                                            style="min-width: 100px; display: inline-block;">{{item.projectItem}}</span>
+                                                            style="min-width: 30px; display: inline-block;">{{item.projectItem}}</span>
                                                 <span
-                                                        style="min-width: 100px; display: inline-block;">{{item.handedness|turnToText2}}</span>
+                                                        style="min-width: 30px; display: inline-block;">{{item.handedness|turnToText2}}</span>
                                                 <span
-                                                        style="min-width: 100px; display: inline-block;">{{item.nerveName}}</span>
+                                                        style="min-width: 30px; display: inline-block;">{{item.nerveName}}</span>
                                                 <span
-                                                        style="min-width: 100px; display: inline-block;">{{item.stimPointPositionName}}</span>
+                                                        style="min-width: 30px; display: inline-block;">{{item.stimPointPositionName}}</span>
                                                 <span
-                                                        style="min-width: 100px; display: inline-block;">{{item.collectPointPositionName}}</span>
-                                                <span
-                                                        style="min-width: 100px; display: inline-block;">{{item.diagnosisTerm}}</span>
+                                                        style="min-width: 30px; display: inline-block;">{{item.collectPointPositionName}}</span>
+                                                <span style="min-width: 30px; display: inline-block;">{{item.paramName}}</span>
+                                                <span style="min-width: 100px; display: inline-block;">{{item.diagnosisTerm}}</span>
+
                                             </li>
                                         </ul>
                                     </li>
@@ -1008,7 +1009,8 @@
                         <div class="form-group">
                             <label>诊断意见：</label>
                         <div>
-                                <ul v-for="(v,k) in advices" :key="k">
+                                <div v-for="(obj,index) in advices" :key="index">
+                                <ul v-for="(v,k) in obj" :key="k">
                                         <li>
                                             {{k}}
                                             <ul v-for="(item,index) in v" :key="index">
@@ -1022,7 +1024,8 @@
                                                 </li>
                                             </ul>
                                         </li>
-                                    </ul>    
+                                    </ul>
+</div>
                         </div>
                         </div>
                         <div>
@@ -1152,7 +1155,7 @@
                 newScvList: [],
                 doctorNameOperate: '',
                 doctorNameDiagnosis: '',
-                diagnoseAdvice: {},
+                diagnoseAdvice: [],
                 advice: [],
                 evaluate: {},
                 isShowDetail: false,
@@ -1813,23 +1816,25 @@
 
 
                 })
+                /*console.log('mcv',this.mcvList)
+                console.log('ret1',ret1)*/
                 if (ret1.length > 0) {
-                    this.diagnoseAdvice['mcv'] = [];
+                    //this.diagnoseAdvice=[];
                     this.getDiagnoseAdvice('mcv', ret1)
                 }
                 if (ret2.length > 0) {
-                    this.diagnoseAdvice['scv'] = [];
+                    //this.diagnoseAdvice=[];
                     this.getDiagnoseAdvice('scv', ret2)
                 }
                 if (ret3.length > 0) {
-                    this.diagnoseAdvice['ssr'] = [];
+                    //this.diagnoseAdvice=[];
                     this.getDiagnoseAdvice('ssr', ret3)
                 }
 
             },
             //遍历数组，匹配nerveId值
-            getDiagnoseAdvice(type, obj) {
-
+            getDiagnoseAdvice(type, args) {
+                let obj=[...args];
                 let tempData = {}
                 switch (type) {
                     case 'mcv':
@@ -1838,21 +1843,26 @@
                             this.mcvList.forEach((mItem, mIndex) => {
                                 if (item.nerveId == mItem.nerveId) {
                                     obj.splice(index,1)
-                                    let options = {}
-                                    options.nerveId = mItem.nerveId
-                                    options.handedness = mItem.handedness;
-                                    options.nerveName = mItem.nerveName;
-                                    options.projectItem = type;
-                                    options.stimPointPositionName = mItem
-                                        .stimPointPositionName;
-                                    options.collectPointPositionName = mItem
-                                        .collectPointPositionName;
-                                    options.diagnosisTerm = item.diagnosisTerm.trim() ||
-                                        '暂无诊断分析结果';
-                                    tempData['MCV'].push(options)
+                                    let retName=this.turnParamName(item.paramName)
+                                    if(mItem[retName]==item.normalLevel){
+                                        let options = {}
+                                        options.nerveId = mItem.nerveId
+                                        options.handedness = mItem.handedness;
+                                        options.nerveName = mItem.nerveName;
+                                        options.projectItem = type;
+                                        options.stimPointPositionName = mItem
+                                            .stimPointPositionName;
+                                        options.collectPointPositionName = mItem
+                                            .collectPointPositionName;
+                                        options.diagnosisTerm = item.diagnosisTerm.trim() ||'暂无诊断分析结果';
+                                        options.paramName = item.paramName
+                                        tempData['MCV'].push(options)
+                                    }
+
                                 }
                             })
                         })
+                        this.diagnoseAdvice.push(tempData)
                         break;
                     case 'scv':
                         tempData['SCV'] = []
@@ -1860,21 +1870,25 @@
                             this.scvList.forEach((sItem, sIndex) => {
                                 if (item.nerveId == sItem.nerveId) {
                                     obj.splice(index,1)
-                                    let options = {}
-                                    options.nerveId = sItem.nerveId
-                                    options.handedness = sItem.handedness;
-                                    options.nerveName = sItem.nerveName;
-                                    options.projectItem = type;
-                                    options.stimPointPositionName = sItem
-                                        .stimPointPositionName;
-                                    options.collectPointPositionName = sItem
-                                        .collectPointPositionName;
-                                    options.diagnosisTerm = item.diagnosisTerm.trim() ||
-                                        '暂无诊断分析结果';
-                                    tempData['SCV'].push(options)
+                                    let retName=this.turnParamName(item.paramName)
+                                    if(sItem[retName]==item.normalLevel){
+                                        let options = {}
+                                        options.nerveId = sItem.nerveId
+                                        options.handedness = sItem.handedness;
+                                        options.nerveName = sItem.nerveName;
+                                        options.projectItem = type;
+                                        options.stimPointPositionName = sItem
+                                            .stimPointPositionName;
+                                        options.collectPointPositionName = sItem
+                                            .collectPointPositionName;
+                                        options.diagnosisTerm = item.diagnosisTerm.trim() ||'暂无诊断分析结果';
+                                        options.paramName = item.paramName
+                                        tempData['SCV'].push(options)
+                                    }
                                 }
                             })
-                        })
+                        });
+                        this.diagnoseAdvice.push(tempData)
                         break;
                     case 'ssr':
                         tempData['SSR'] = []
@@ -1882,25 +1896,37 @@
                             this.ssrList.forEach((rItem, rIndex) => {
                                 if (item.nerveId == rItem.nerveId) {
                                     obj.splice(index,1)
-                                    let options = {}
-                                    options.nerveId = rItem.nerveId
-                                    options.handedness = rItem.handedness;
-                                    options.nerveName = rItem.nerveName;
-                                    options.projectItem = type;
-                                    options.stimPointPositionName = rItem
-                                        .stimPointPositionName;
-                                    options.collectPointPositionName = rItem
-                                        .collectPointPositionName;
-                                    options.diagnosisTerm = item.diagnosisTerm.trim() ||
-                                        '暂无诊断分析结果';
-                                    tempData['SSR'].push(options)
-
+                                    let retName=this.turnParamName(item.paramName)
+                                    if(rItem[retName]==item.normalLevel){
+                                        let options = {}
+                                        options.nerveId = rItem.nerveId
+                                        options.handedness = rItem.handedness;
+                                        options.nerveName = rItem.nerveName;
+                                        options.projectItem = type;
+                                        options.stimPointPositionName = rItem
+                                            .stimPointPositionName;
+                                        options.collectPointPositionName = rItem
+                                            .collectPointPositionName;
+                                        options.diagnosisTerm = item.diagnosisTerm.trim() ||'暂无诊断分析结果';
+                                        options.paramName = item.paramName
+                                        tempData['SSR'].push(options)
+                                    }
                                 }
                             })
-                        })
+                        });
+                        this.diagnoseAdvice.push(tempData)
                         break;
                 }
-                this.diagnoseAdvice = tempData;
+            },
+            //转换诊断结果的参数名称
+            turnParamName(name){
+                switch(name){
+                    case '潜伏期':return 'latencyPeriodN';
+                    case '潜伏期1':return 'latencyPeriod1N';
+                    case '波幅':return 'amplitudeN';
+                    case '速度':return 'speedN';
+                    case '峰峰值':return 'vppN';
+                }
             },
             //获取用户信息
             getCurrentPatient(path) {
