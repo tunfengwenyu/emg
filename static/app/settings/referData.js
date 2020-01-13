@@ -254,6 +254,9 @@ $(function () {
         resetClick('#modal-add')
     })
 
+    //速度和波幅不需要选择上限
+
+
 
 });
 //双向的数据

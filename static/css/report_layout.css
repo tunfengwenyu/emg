@@ -144,6 +144,12 @@ caption{
     margin-top:20px;
     margin-bottom:20px;
 }
+td[data-refer=""]{
+    background-color:#fff!important;
+}
+td[data-refer=""] span{
+    display:none!important;
+}
 td[data-refer="0"]{
     background-color:#5BB85D;
 }
@@ -158,6 +164,9 @@ td[data-refer="3"]{
 }
 td[data-refer="4"]{
     background-color: #999;
+}
+td[data-refer="4"] span{
+    display:none!important;
 }
 td[data-refer="5"]{
     background-color:#5BB85D;

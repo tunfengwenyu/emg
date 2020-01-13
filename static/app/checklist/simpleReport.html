@@ -69,6 +69,7 @@
             </div>
             <div class="report-color-status no-print clearfix">
                 <div class="pull-right">
+                    <span class="label label-default" style="background-color:gold;">正常(上升|下降)</span>
                     <span class="label label-default">未统计</span>
                     <span class="label label-success">正常</span>
                     <span class="label label-danger">异常</span>
@@ -103,50 +104,62 @@
                                 <td style="width:10%;">{{item.stimPointPositionName|turnToText}}</td>
                                 <td style="width:10%;">{{item.collectPointPositionName|turnToText}}</td>
                                 <td style="color:#000;" :data-refer="reportData.reportStatus!=3?item.speedNLeft:''"
-                                    :title="'正常值为：'+item.speedRLeft">
+                                    :title="'正常值为：'+item.speedRLeft" :style="item.speedNLeft==5||item.speedNLeft==6?'background-color:gold;':''">
                                     {{item.speedLeft|turnToText}}
-                                    <span v-if="item.speedRLeft && reportData.reportStatus!=3"
-                                          class="badge pull-right" style="background-color:orange;color:#fff;"
-                                          v-html="getCalcPercent(item.speedLeft,item.speedRLeft)"></span>
+                                    <template v-if="(item.speedNLeft!=0)&&(item.speedNLeft!=5)&&(item.speedNLeft!=6)">
+                                        <span v-if="item.speedRLeft && reportData.reportStatus!=3"
+                                              class="badge pull-right" style="background-color:orange;color:#fff;"
+                                              v-html="getCalcPercent(item.speedLeft,item.speedRLeft)"></span>
+                                    </template>
                                 </td>
-                                <td style="color:#000;" :data-refer="reportData.reportStatus!=3?item.speedNRight:''"
+                                <td style="color:#000;" :data-refer="reportData.reportStatus!=3?item.speedNRight:''" :style="item.speedNRight==5||item.speedNRight==6?'background-color:gold;':''"
                                     :title="'正常值为：'+item.speedRRight">
                                     {{item.speedRight|turnToText}}
-                                    <span v-if="item.speedRRight&& reportData.reportStatus!=3"
-                                          class="badge pull-right" style="background-color:orange;color:#fff;"
-                                          v-html="getCalcPercent(item.speedRight,item.speedRRight)"></span>
+                                    <template v-if="item.speedNRight!=0&&item.speedNRight!=5&&item.speedNRight!=6">
+                                        <span v-if="item.speedRRight&& reportData.reportStatus!=3"
+                                              class="badge pull-right" style="background-color:orange;color:#fff;"
+                                              v-html="getCalcPercent(item.speedRight,item.speedRRight)"></span>
+                                    </template>
                                 </td>
                                 <td style="color:#000;"
-                                    :data-refer="reportData.reportStatus!=3?item.latencyPeriodNLeft:''"
+                                    :data-refer="reportData.reportStatus!=3&&item.stimPointPositionName.includes('肘部')==false&&item.stimPointPositionName.includes('腓骨小头')==false?item.latencyPeriodNLeft:''" :style="item.latencyPeriodNLeft==5||item.latencyPeriodNLeft==6?'background-color:gold;':''"
                                     :title="'正常值为：'+item.latencyPeriodRLeft">
                                     {{item.latencyPeriodLeft|turnToText}}
-                                    <span v-if="item.latencyPeriodRLeft && reportData.reportStatus!=3"
-                                          class="badge pull-right" style="background-color:orange;color:#fff;"
-                                          v-html="getCalcPercent(item.latencyPeriodLeft,item.latencyPeriodRLeft)"></span>
+                                    <template v-if="item.latencyPeriodNLeft!=0&&item.latencyPeriodNLeft!=5&&item.latencyPeriodNLeft!=6">
+                                        <span v-if="item.latencyPeriodRLeft && reportData.reportStatus!=3"
+                                              class="badge pull-right" style="background-color:orange;color:#fff;"
+                                              v-html="getCalcPercent(item.latencyPeriodLeft,item.latencyPeriodRLeft)"></span>
+                                    </template>
                                 </td>
                                 <td style="color:#000;"
-                                    :data-refer="reportData.reportStatus!=3?item.latencyPeriodNRight:''"
+                                    :data-refer="reportData.reportStatus!=3&&item.stimPointPositionName.includes('肘部')==false&&item.stimPointPositionName.includes('腓骨小头')==false?item.latencyPeriodNRight:''" :style="item.latencyPeriodNRight==5||item.latencyPeriodNRight==6?'background-color:gold;':''"
                                     :title="'正常值为：'+item.latencyPeriodRRight">
                                     {{item.latencyPeriodRight|turnToText}}
-                                    <span v-if="item.latencyPeriodRRight && reportData.reportStatus!=3"
-                                          class="badge pull-right" style="background-color:orange;color:#fff;"
-                                          v-html="getCalcPercent(item.latencyPeriodRight,item.latencyPeriodRRight)"></span>
+                                    <template v-if="item.latencyPeriodNRight!=0&&item.latencyPeriodNRight!=5&&item.latencyPeriodNRight!=6">
+                                        <span v-if="item.latencyPeriodRRight && reportData.reportStatus!=3"
+                                              class="badge pull-right" style="background-color:orange;color:#fff;"
+                                              v-html="getCalcPercent(item.latencyPeriodRight,item.latencyPeriodRRight)"></span>
+                                    </template>
                                 </td>
                                 <td style="color:#000;"
-                                    :data-refer="reportData.reportStatus!=3?item.amplitudeNLeft:''"
+                                    :data-refer="reportData.reportStatus!=3?item.amplitudeNLeft:''" :style="item.amplitudeNLeft==5||item.amplitudeNLeft==6?'background-color:gold;':''"
                                     :title="'正常值为：'+item.amplitudeRLeft">
                                     {{item.amplitudeLeft|turnToText}}
-                                    <span v-if="item.amplitudeRLeft && reportData.reportStatus!=3"
-                                          class="badge pull-right" style="background-color:orange;color:#fff;"
-                                          v-html="getCalcPercent(item.amplitudeLeft,item.amplitudeRLeft)"></span>
+                                    <template v-if="item.amplitudeNLeft!=0&&item.amplitudeNLeft!=5&&item.amplitudeNLeft!=6">
+                                        <span v-if="item.amplitudeRLeft && reportData.reportStatus!=3"
+                                              class="badge pull-right" style="background-color:orange;color:#fff;"
+                                              v-html="getCalcPercent(item.amplitudeLeft,item.amplitudeRLeft)"></span>
+                                    </template>
                                 </td>
                                 <td style="color:#000;"
-                                    :data-refer="reportData.reportStatus!=3?item.amplitudeNRight:''"
+                                    :data-refer="reportData.reportStatus!=3?item.amplitudeNRight:''" :style="item.amplitudeNRight==5||item.amplitudeNRight==6?'background-color:gold;':''"
                                     :title="'正常值为：'+item.amplitudeRRight">
                                     {{item.amplitudeRight|turnToText}}
-                                    <span v-if="item.amplitudeRRight && reportData.reportStatus!=3"
-                                          class="badge pull-right" style="background-color:orange;color:#fff;"
-                                          v-html="getCalcPercent(item.amplitudeRight,item.amplitudeRRight)"></span>
+                                    <template v-if="item.amplitudeNRight!=0&&item.amplitudeNRight!=5&&item.amplitudeNRight!=6">
+                                        <span v-if="item.amplitudeRRight && reportData.reportStatus!=3"
+                                              class="badge pull-right" style="background-color:orange;color:#fff;"
+                                              v-html="getCalcPercent(item.amplitudeRight,item.amplitudeRRight)"></span>
+                                    </template>
                                 </td>
                             </tr>
                         </template>
@@ -178,13 +191,13 @@
                                            :value="item.speedRight!='-'?item.speedRight:''">
 
                                 </td>
-                                <td style="color:#000;" :data-refer="item.latencyPeriodNLeft"
+                                <td style="color:#000;" :data-refer="reportData.reportStatus!=3&&item.stimPointPositionName.includes('肘部')==false&&item.stimPointPositionName.includes('腓骨小头')==false?item.latencyPeriodNLeft:''"
                                     :title="'正常值为：'+item.latencyPeriodRLeft">
                                     <input class="form-control" type="text" name="latencyPeriodLeft"
                                            :value="item.latencyPeriodLeft!='-'?item.latencyPeriodLeft:''">
 
                                 </td>
-                                <td style="color:#000;" :data-refer="item.latencyPeriodNRight"
+                                <td style="color:#000;" :data-refer="reportData.reportStatus!=3&&item.stimPointPositionName.includes('肘部')==false&&item.stimPointPositionName.includes('腓骨小头')==false?item.latencyPeriodNRight:''"
                                     :title="'正常值为：'+item.latencyPeriodRRight">
                                     <input class="form-control" type="text" name="latencyPeriodRight"
                                            :value="item.latencyPeriodRight!='-'?item.latencyPeriodRight:''">
@@ -234,34 +247,38 @@
                                                 {{item.stimPointPositionName}} - {{item.collectPointPositionName}}
                                             </td>
                                             <td data-name="speed"
-                                                :data-refer="reportData.reportStatus!=3?item.speedN:''"
+                                                :data-refer="reportData.reportStatus!=3?item.speedN:''" :style="item.speedN==5||item.speedN==6?'background-color:gold;':''"
                                                 :title="'正常值为：'+item.speedR">
                                                 {{item.speed}}
-                                                <span class="badge pull-right"
-                                                      v-if="item.speedR && reportData.reportStatus!=3"
-                                                      style="background-color:orange;color:#fff;"
-                                                      v-html="getCalcPercent(item.speed,item.speedR)">
+                                                <template v-if="item.speedN!=0&&item.speedN!=5&&item.speedN!=6">
+                                                    <span class="badge pull-right"
+                                                          v-if="item.speedR && reportData.reportStatus!=3"
+                                                          style="background-color:orange;color:#fff;"
+                                                          v-html="getCalcPercent(item.speed,item.speedR)">
                                                     </span>
+                                                </template>
                                             </td>
-                                            <td data-name="latencyPeriod"
-                                                :data-refer="reportData.reportStatus!=3?item.latencyPeriodN:''"
-                                                :title="'正常值为：'+item.latencyPeriodR">
+                                            <td data-name="latencyPeriod" :data-refer="reportData.reportStatus!=3&&item.stimPointPositionName.includes('肘部')==false&&item.stimPointPositionName.includes('腓骨小头')==false?item.latencyPeriodN:''" :title="'正常值为：'+item.latencyPeriodR" :style="item.latencyPeriodN==5||item.latencyPeriodN==6?'background-color:gold;':''">
                                                 {{item.latencyPeriod}}
-                                                <span class="badge pull-right"
-                                                      v-if="item.latencyPeriodR && reportData.reportStatus!=3"
-                                                      style="background-color:orange;color:#fff;"
-                                                      v-html="getCalcPercent(item.latencyPeriod,item.latencyPeriodR)">
+                                                <template v-if="item.latencyPeriodN!=0&&item.latencyPeriodN!=5&&item.latencyPeriodN!=6">
+                                                    <span class="badge pull-right"
+                                                          v-if="item.latencyPeriodR && reportData.reportStatus!=3"
+                                                          style="background-color:orange;color:#fff;"
+                                                          v-html="getCalcPercent(item.latencyPeriod,item.latencyPeriodR)">
                                                     </span>
+                                                </template>
                                             </td>
                                             <td data-name="amplitude"
-                                                :data-refer="reportData.reportStatus!=3?item.amplitudeN:''"
+                                                :data-refer="reportData.reportStatus!=3?item.amplitudeN:''" :style="item.amplitudeN==5||item.amplitudeN==6?'background-color:gold;':''"
                                                 :title="'正常值为:'+item.amplitudeR">
                                                 {{item.amplitude}}
-                                                <span class="badge pull-right"
-                                                      v-if="item.amplitudeR && reportData.reportStatus!=3"
-                                                      style="background-color:orange;color:#fff;"
-                                                      v-html="getCalcPercent(item.amplitude,item.amplitudeR)">
+                                                <template v-if="item.amplitudeN!=0&&item.amplitudeN!=5&&item.amplitudeN!=6">
+                                                    <span class="badge pull-right"
+                                                          v-if="item.amplitudeR && reportData.reportStatus!=3"
+                                                          style="background-color:orange;color:#fff;"
+                                                          v-html="getCalcPercent(item.amplitude,item.amplitudeR)">
                                                     </span>
+                                                </template>
                                             </td>
 
                                         </tr>
@@ -298,34 +315,40 @@
                                                 {{item.stimPointPositionName}} - {{item.collectPointPositionName}}
                                             </td>
                                             <td data-name="speed"
-                                                :data-refer="reportData.reportStatus!=3?item.speedN:''"
+                                                :data-refer="reportData.reportStatus!=3?item.speedN:''" :style="item.speedN==5||item.speedN==6?'background-color:gold;':''"
                                                 :title="'正常值为：'+item.speedR">
                                                 {{item.speed}}
-                                                <span class="badge pull-right"
-                                                      v-if="item.speedR && reportData.reportStatus!=3"
-                                                      style="background-color:orange;color:#fff;"
-                                                      v-html="getCalcPercent(item.speed,item.speedR)">
+                                                <template v-if="item.speedN!=0&&item.speedN!=5&&item.speedN!=6">
+                                                    <span class="badge pull-right"
+                                                          v-if="item.speedR && reportData.reportStatus!=3"
+                                                          style="background-color:orange;color:#fff;"
+                                                          v-html="getCalcPercent(item.speed,item.speedR)">
                                                     </span>
+                                                </template>
                                             </td>
                                             <td data-name="latencyPeriod"
-                                                :data-refer="reportData.reportStatus!=3?item.latencyPeriodN:''"
+                                                :data-refer="reportData.reportStatus!=3&&item.stimPointPositionName.includes('肘部')==false&&item.stimPointPositionName.includes('腓骨小头')==false?item.latencyPeriodN:''" :style="item.latencyPeriodN==5||item.latencyPeriodN==6?'background-color:gold;':''"
                                                 :title="'正常值为：'+item.latencyPeriodR">
                                                 {{item.latencyPeriod}}
-                                                <span class="badge pull-right"
-                                                      v-if="item.latencyPeriodR && reportData.reportStatus!=3"
-                                                      style="background-color:orange;color:#fff;"
-                                                      v-html="getCalcPercent(item.latencyPeriod,item.latencyPeriodR)">
+                                                <template v-if="item.latencyPeriodN!=0&&item.latencyPeriodN!=5&&item.latencyPeriodN!=6">
+                                                    <span class="badge pull-right"
+                                                          v-if="item.latencyPeriodR && reportData.reportStatus!=3"
+                                                          style="background-color:orange;color:#fff;"
+                                                          v-html="getCalcPercent(item.latencyPeriod,item.latencyPeriodR)">
                                                     </span>
+                                                </template>
                                             </td>
                                             <td data-name="amplitude"
-                                                :data-refer="reportData.reportStatus!=3?item.amplitudeN:''"
+                                                :data-refer="reportData.reportStatus!=3?item.amplitudeN:''" :style="item.amplitudeN==5||item.amplitudeN==6?'background-color:gold;':''"
                                                 :title="'正常值为：'+item.amplitudeR">
                                                 {{item.amplitude}}
-                                                <span class="badge pull-right"
-                                                      v-if="item.amplitudeR && reportData.reportStatus!=3"
-                                                      style="background-color:orange;color:#fff;"
-                                                      v-html="getCalcPercent(item.amplitude,item.amplitudeR)">
+                                                <template v-if="item.amplitudeN!=0&&item.amplitudeN!=5&&item.amplitudeN!=6">
+                                                    <span class="badge pull-right"
+                                                          v-if="item.amplitudeR && reportData.reportStatus!=3"
+                                                          style="background-color:orange;color:#fff;"
+                                                          v-html="getCalcPercent(item.amplitude,item.amplitudeR)">
                                                     </span>
+                                                </template>
                                             </td>
 
                                         </tr>
@@ -372,51 +395,63 @@
                                 <td style="width:10%;">{{item.nerveName|turnToText}}</td>
                                 <td style="width:10%;">{{item.stimPointPositionName|turnToText}}</td>
                                 <td style="width:10%;">{{item.collectPointPositionName|turnToText}}</td>
-                                <td style="color:#000;" :data-refer="reportData.reportStatus!=3?item.speedNLeft:''"
+                                <td style="color:#000;" :data-refer="reportData.reportStatus!=3?item.speedNLeft:''" :style="item.speedNLeft==5||item.speedNLeft==6?'background-color:gold;':''"
                                     :title="'正常值为：'+item.speedRLeft">
                                     {{item.speedLeft|turnToText}}
-                                    <span v-if="item.speedRLeft&& reportData.reportStatus!=3"
-                                          class="badge pull-right" style="background-color:orange;color:#fff;"
-                                          v-html="getCalcPercent(item.speedLeft,item.speedRLeft)"></span>
+                                    <template v-if="item.speedNLeft!=0&&item.speedNLeft!=5&&item.speedNLeft!=6">
+                                        <span v-if="item.speedRLeft&& reportData.reportStatus!=3"
+                                              class="badge pull-right" style="background-color:orange;color:#fff;"
+                                              v-html="getCalcPercent(item.speedLeft,item.speedRLeft)"></span>
+                                    </template>
                                 </td>
-                                <td style="color:#000;" :data-refer="reportData.reportStatus!=3?item.speedNRight:''"
+                                <td style="color:#000;" :data-refer="reportData.reportStatus!=3?item.speedNRight:''" :style="item.speedNRight==5||item.speedNRight==6?'background-color:gold;':''"
                                     :title="'正常值为：'+item.speedRRight">
                                     {{item.speedRight|turnToText}}
-                                    <span v-if="item.speedRRight&& reportData.reportStatus!=3"
-                                          class="badge pull-right" style="background-color:orange;color:#fff;"
-                                          v-html="getCalcPercent(item.speedRight,item.speedRRight)"></span>
+                                    <template v-if="item.speedNRight!=0&&item.speedNRight!=5&&item.speedNRight!=6">
+                                        <span v-if="item.speedRRight&& reportData.reportStatus!=3"
+                                              class="badge pull-right" style="background-color:orange;color:#fff;"
+                                              v-html="getCalcPercent(item.speedRight,item.speedRRight)"></span>
+                                    </template>
                                 </td>
-                                <td style="color:#000;"
-                                    :data-refer="reportData.reportStatus!=3?item.latencyPeriodNLeft:''"
-                                    :title="'正常值为：'+item.latencyPeriodRLeft">
+                                <td style="color:#000;">
+                                    <!--:data-refer="reportData.reportStatus!=3?item.latencyPeriodNLeft:''" :style="item.latencyPeriodNLeft==5||item.latencyPeriodNLeft==6?'background-color:gold;':''"
+                                    :title="'正常值为：'+item.latencyPeriodRLeft"-->
                                     {{item.latencyPeriodLeft|turnToText}}
-                                    <span v-if="item.latencyPeriodRLeft && reportData.reportStatus!=3"
-                                          class="badge pull-right" style="background-color:orange;color:#fff;"
-                                          v-html="getCalcPercent(item.latencyPeriodLeft,item.latencyPeriodRLeft)"></span>
+                                    <!--<template v-if="item.latencyPeriodNLeft!=0&&item.latencyPeriodNLeft!=5&&item.latencyPeriodNLeft!=6">
+                                        <span v-if="item.latencyPeriodRLeft && reportData.reportStatus!=3"
+                                              class="badge pull-right" style="background-color:orange;color:#fff;"
+                                              v-html="getCalcPercent(item.latencyPeriodLeft,item.latencyPeriodRLeft)"></span>
+                                    </template>-->
                                 </td>
-                                <td style="color:#000;"
-                                    :data-refer="reportData.reportStatus!=3?item.latencyPeriodNRight:''"
-                                    :title="'正常值为：'+item.latencyPeriodRRight">
+                                <td style="color:#000;">
+                                    <!--:data-refer="reportData.reportStatus!=3?item.latencyPeriodNRight:''" :style="item.latencyPeriodNRight==5||item.latencyPeriodNRight==6?'background-color:gold;':''"
+                                    :title="'正常值为：'+item.latencyPeriodRRight"-->
                                     {{item.latencyPeriodRight|turnToText}}
-                                    <span v-if="item.latencyPeriodRRight && reportData.reportStatus!=3"
-                                          class="badge pull-right" style="background-color:orange;color:#fff;"
-                                          v-html="getCalcPercent(item.latencyPeriodRight,item.latencyPeriodRRight)"></span>
+                                    <!--<template v-if="item.latencyPeriodNRight!=0&&item.latencyPeriodNRight!=5&&item.latencyPeriodNRight!=6">
+                                        <span v-if="item.latencyPeriodRRight && reportData.reportStatus!=3"
+                                              class="badge pull-right" style="background-color:orange;color:#fff;"
+                                              v-html="getCalcPercent(item.latencyPeriodRight,item.latencyPeriodRRight)"></span>
+                                    </template>-->
                                 </td>
                                 <td style="color:#000;"
-                                    :data-refer="reportData.reportStatus!=3?item.amplitudeNLeft:''"
+                                    :data-refer="reportData.reportStatus!=3?item.amplitudeNLeft:''" :style="item.amplitudeNLeft==5||item.amplitudeNLeft==6?'background-color:gold;':''"
                                     :title="'正常值为：'+item.amplitudeRLeft">
                                     {{item.amplitudeLeft|turnToText}}
-                                    <span v-if="item.amplitudeRLeft && reportData.reportStatus!=3"
-                                          class="badge pull-right" style="background-color:orange;color:#fff;"
-                                          v-html="getCalcPercent(item.amplitudeLeft,item.amplitudeRLeft)"></span>
+                                    <!--<template v-if="item.amplitudeNLeft!=0&&item.amplitudeNLeft!=5&&item.amplitudeNLeft!=6">
+                                        <span v-if="item.amplitudeRLeft && reportData.reportStatus!=3"
+                                              class="badge pull-right" style="background-color:orange;color:#fff;"
+                                              v-html="getCalcPercent(item.amplitudeLeft,item.amplitudeRLeft)"></span>
+                                    </template>-->
                                 </td>
                                 <td style="color:#000;"
-                                    :data-refer="reportData.reportStatus!=3?item.amplitudeNRight:''"
+                                    :data-refer="reportData.reportStatus!=3?item.amplitudeNRight:''" :style="item.amplitudeNRight==5||item.amplitudeNRight==6?'background-color:gold;':''"
                                     :title="'正常值为：'+item.amplitudeRRight">
                                     {{item.amplitudeRight|turnToText}}
-                                    <span v-if="item.amplitudeRRight && reportData.reportStatus!=3"
-                                          class="badge pull-right" style="background-color:orange;color:#fff;"
-                                          v-html="getCalcPercent(item.amplitudeRight,item.amplitudeRRight)"></span>
+                                    <template v-if="item.amplitudeNRight!=0&&item.amplitudeNRight!=5&&item.amplitudeNRight!=6">
+                                        <span v-if="item.amplitudeRRight && reportData.reportStatus!=3"
+                                              class="badge pull-right" style="background-color:orange;color:#fff;"
+                                              v-html="getCalcPercent(item.amplitudeRight,item.amplitudeRRight)"></span>
+                                    </template>
                                 </td>
                             </tr>
                         </template>
@@ -501,35 +536,39 @@
                                                 {{item.stimPointPositionName}} - {{item.collectPointPositionName}}
                                             </td>
                                             <td data-name="speed"
-                                                :data-refer="reportData.reportStatus!=3?item.speedN:''"
+                                                :data-refer="reportData.reportStatus!=3?item.speedN:''" :style="item.speedN==5||item.speedN==6?'background-color:gold;':''"
                                                 :title="'正常值为'+item.speedR">
                                                 {{item.speed}}
-                                                <span class="badge pull-right"
-                                                      v-if="item.speedR && reportData.reportStatus!=3"
-                                                      style="background-color:orange;color:#fff;"
-                                                      v-html="getCalcPercent(item.speed,item.speedR)"
-                                                      v-html="getCalcPercent(item.speed,item.speedR)">
+                                                <template v-if="item.speedN!=0&&item.speedN!=5&&item.speedN!=6">
+                                                    <span class="badge pull-right"
+                                                          v-if="item.speedR && reportData.reportStatus!=3"
+                                                          style="background-color:orange;color:#fff;"
+                                                          v-html="getCalcPercent(item.speed,item.speedR)"
+                                                          v-html="getCalcPercent(item.speed,item.speedR)">
                                                     </span>
+                                                </template>
                                             </td>
-                                            <td data-name="latencyPeriod"
-                                                :data-refer="reportData.reportStatus!=3?item.latencyPeriodN:''"
-                                                :title="'正常值为：'+item.latencyPeriodR">
+                                            <td data-name="latencyPeriod">
+                                                <!--:data-refer="reportData.reportStatus!=3?item.latencyPeriodN:''"
+                                                :title="'正常值为：'+item.latencyPeriodR"-->
                                                 {{item.latencyPeriod}}
-                                                <span class="badge pull-right"
+                                                <!--<span class="badge pull-right"
                                                       v-if="item.latencyPeriodR && reportData.reportStatus!=3"
                                                       style="background-color:orange;color:#fff;"
                                                       v-html="getCalcPercent(item.latencyPeriod,item.latencyPeriodR)">
-                                                    </span>
+                                                    </span>-->
                                             </td>
                                             <td data-name="amplitude"
-                                                :data-refer="reportData.reportStatus!=3?item.amplitudeN:''"
+                                                :data-refer="reportData.reportStatus!=3?item.amplitudeN:''" :style="item.amplitudeN==5||item.amplitudeN==6?'background-color:gold;':''"
                                                 :title="'正常值为：'+item.amplitudeR">
                                                 {{item.amplitude}}
-                                                <span class="badge pull-right"
-                                                      v-if="item.amplitudeR && reportData.reportStatus!=3"
-                                                      style="background-color:orange;color:#fff;"
-                                                      v-html="getCalcPercent(item.amplitude,item.amplitudeR)">
+                                                <template v-if="item.amplitudeN!=0&&item.amplitudeN!=5&&item.amplitudeN!=6">
+                                                    <span class="badge pull-right"
+                                                          v-if="item.amplitudeR && reportData.reportStatus!=3"
+                                                          style="background-color:orange;color:#fff;"
+                                                          v-html="getCalcPercent(item.amplitude,item.amplitudeR)">
                                                     </span>
+                                                </template>
                                             </td>
 
                                         </tr>
@@ -566,34 +605,38 @@
                                                 {{item.stimPointPositionName}} - {{item.collectPointPositionName}}
                                             </td>
                                             <td data-name="speed"
-                                                :data-refer="reportData.reportStatus!=3?item.speedN:''"
+                                                :data-refer="reportData.reportStatus!=3?item.speedN:''" :style="item.speedN==5||item.speedN==6?'background-color:gold;':''"
                                                 :title="'正常值为：'+item.speedR">
                                                 {{item.speed}}
-                                                <span class="badge pull-right"
-                                                      v-if="item.speedR && reportData.reportStatus!=3"
-                                                      style="background-color:orange;color:#fff;"
-                                                      v-html="getCalcPercent(item.speed,item.speedR)">
+                                                <template v-if="item.speedN!=0&&item.speedN!=5&&item.speedN!=6">
+                                                    <span class="badge pull-right"
+                                                          v-if="item.speedR && reportData.reportStatus!=3"
+                                                          style="background-color:orange;color:#fff;"
+                                                          v-html="getCalcPercent(item.speed,item.speedR)">
                                                     </span>
+                                                </template>
                                             </td>
-                                            <td data-name="latencyPeriod"
-                                                :data-refer="reportData.reportStatus!=3?item.latencyPeriodN:''"
-                                                :title="'正常值为：'+item.latencyPeriodR">
+                                            <td data-name="latencyPeriod">
+                                                <!--:data-refer="reportData.reportStatus!=3?item.latencyPeriodN:''"
+                                                :title="'正常值为：'+item.latencyPeriodR"-->
                                                 {{item.latencyPeriod}}
-                                                <span class="badge pull-right"
+                                                <!--<span class="badge pull-right"
                                                       v-if="item.latencyPeriodR && reportData.reportStatus!=3"
                                                       style="background-color:orange;color:#fff;"
                                                       v-html="getCalcPercent(item.latencyPeriod,item.latencyPeriodR)">
-                                                    </span>
+                                                    </span>-->
                                             </td>
                                             <td data-name="amplitude"
-                                                :data-refer="reportData.reportStatus!=3?item.amplitudeN:''"
+                                                :data-refer="reportData.reportStatus!=3?item.amplitudeN:''" :style="item.amplitudeN==5||item.amplitudeN==6?'background-color:gold;':''"
                                                 :title="'正常值为:'+item.amplitudeR">
                                                 {{item.amplitude}}
-                                                <span class="badge pull-right"
-                                                      v-if="item.amplitudeR && reportData.reportStatus!=3"
-                                                      style="background-color:orange;color:#fff;"
-                                                      v-html="getCalcPercent(item.amplitude,item.amplitudeR)">
+                                                <template v-if="item.amplitudeN!=0&&item.amplitudeN!=5&&item.amplitudeN!=6">
+                                                    <span class="badge pull-right"
+                                                          v-if="item.amplitudeR && reportData.reportStatus!=3"
+                                                          style="background-color:orange;color:#fff;"
+                                                          v-html="getCalcPercent(item.amplitude,item.amplitudeR)">
                                                     </span>
+                                                </template>
                                             </td>
 
                                         </tr>
@@ -639,22 +682,26 @@
                                             <td width="20%">{{item.stimPointPositionName}}</td>
                                             <td width="20%">{{item.collectPointPositionName}}</td>
                                             <td width="20%" style="color:#000;"
-                                                :data-refer="reportData.reportStatus!=3?item.latencyPeriod1N:''"
+                                                :data-refer="reportData.reportStatus!=3?item.latencyPeriod1N:''" :style="item.latencyPeriod1N==5||item.latencyPeriod1N==6?'background-color:gold;':''"
                                                 :title="'正常值为：'+item.latencyPeriod1R">
                                                 {{item.latencyPeriod1}}
-                                                <span v-if="item.latencyPeriod1R && reportData.reportStatus!=3"
-                                                      class="badge pull-right"
-                                                      style="background-color:orange;color:#fff;"
-                                                      v-html="getCalcPercent(item.latencyPeriod1,item.latencyPeriod1R)"></span>
+                                                <template v-if="item.latencyPeriod1N!=0&&item.latencyPeriod1N!=5&&item.latencyPeriod1N!=6">
+                                                    <span v-if="item.latencyPeriod1R && reportData.reportStatus!=3"
+                                                          class="badge pull-right"
+                                                          style="background-color:orange;color:#fff;"
+                                                          v-html="getCalcPercent(item.latencyPeriod1,item.latencyPeriod1R)"></span>
+                                                </template>
                                             </td>
                                             <td width="20%" style="color:#000;"
-                                                :data-refer="reportData.reportStatus!=3?item.vppN:''"
+                                                :data-refer="reportData.reportStatus!=3?item.vppN:''" :style="item.vppN==5||item.vppN==6?'background-color:gold;':''"
                                                 :title="'正常值为：'+item.vppR">
                                                 {{item.vpp}}
-                                                <span v-if="item.vppR && reportData.reportStatus!=3"
-                                                      class="badge pull-right"
-                                                      style="background-color:orange;color:#fff;"
-                                                      v-html="getCalcPercent(item.vpp,item.vppR)"></span>
+                                                <template v-if="item.vppN!=0&&item.vppN!=5&&item.vppN!=6">
+                                                    <span v-if="item.vppR && reportData.reportStatus!=3"
+                                                          class="badge pull-right"
+                                                          style="background-color:orange;color:#fff;"
+                                                          v-html="getCalcPercent(item.vpp,item.vppR)"></span>
+                                                </template>
                                             </td>
                                         </tr>
                                         <tr v-if="isShowDetail">
@@ -768,6 +815,18 @@
                     </tbody>
                 </table>
                 <table class="table">
+                    <caption>检测结果分析</caption>
+                    <tbody>
+                    <tr>
+                        <td colspan="7" class="advice">
+                                <textarea name="advice" id="advice-message" readonly
+                                          style="text-align:left;text-indent: 0;">{{note|turnToText}}</textarea>
+                        </td>
+                    </tr>
+                    </tbody>
+
+                </table>
+                <table class="table">
                     <caption>赋分</caption>
                     <tbody>
                     <tr>
@@ -789,52 +848,31 @@
                         </td>
                     </tr>
                     </tbody>
+
                 </table>
-                <table class="table">
-                    <caption>检查结果</caption>
-                    <tbody>
-                    <tr>
-                        <td colspan="7" class="advice">
-                                <textarea name="advice" id="advice-message" readonly
-                                          style="text-align:left;text-indent: 0;">{{note|turnToText}}</textarea>
-                        </td>
-                    </tr>
-                    </tbody>
+                <table>
                     <tfoot>
                     <tr>
-                        <td colspan="5" class="col-sm-8 col-xs-8">
+                        <td colspan="4" class="col-sm-8 col-xs-8">
                         </td>
-                        <td>
+                        <td style="padding:8px;">
                             <div class="form-group operate-doctor-name doctor-submit-name">
                                 <label for="doctor-submit">提交医师</label>
                                 <input type="text" class="form-control text-info alter-info" id="doctor-submit"
                                        v-model="doctorNameOperate" readonly>
                             </div>
                         </td>
-                        <td>
+                        <td style="padding:8px;">
                             <div class="form-group operate-doctor-name doctor-confirm-name">
                                 <label for="doctor-confirm">审核医师</label>
                                 <input type="text" class="form-control text-info alter-info" id="doctor-confirm"
                                        v-model="doctorNameDiagnosis" readonly>
                             </div>
                         </td>
-                        <!-- <td class="col-sm-2 col-xs-2">
-
-                        </td>
-
-                        <td class="col-sm-1 col-xs-1"></td> -->
-                        <!-- <td class="col-sm-1 col-xs-1">
-                            <a :disabled="isSubmit" class="btn btn-primary no-print" id="report-current-btn"
-                                type="button" @click="submitReport(5)">提交报告
-                            </a>
-                        </td> -->
-                        <!-- <td class="col-sm-1 col-xs-1">
-                            <a v-if="!isCancelEdit" :disabled="isDrawBack" class="btn btn-danger no-print"
-                                id="report-current-return" type="button" @click="takeReportBack">退回报告</a>
-                        </td> -->
                     </tr>
                     </tfoot>
                 </table>
+
             </div>
         </div>
     </div>
@@ -1044,7 +1082,7 @@
         </div>
         `,
         props: {
-            advices: Object,
+            advices: Array,
             note: String,
         },
         data() {
@@ -1171,6 +1209,7 @@
                 num: 0,
                 imgBaseUrl: 'http://files.kfylt.cn/',
                 curRoleId: '',
+                unnormalColor:'gold'
             }
         },
         filters: {
@@ -1816,8 +1855,6 @@
 
 
                 })
-                /*console.log('mcv',this.mcvList)
-                console.log('ret1',ret1)*/
                 if (ret1.length > 0) {
                     //this.diagnoseAdvice=[];
                     this.getDiagnoseAdvice('mcv', ret1)
@@ -2218,8 +2255,8 @@
                         this.mcvList = []
                         this.ssrList = []
                         this.scvList = []
-                        this.newMcvList = [],
-                            this.newScvList = [],
+                        this.newMcvList = []
+                            this.newScvList = []
                             this.getHistoryParams()
                     } else {
                         Shinez.tip('error', `编辑报告出错${ret.msg}`)

@@ -182,6 +182,14 @@ td, th {
     font-size:12px;
     white-space:nowrap;
 }
+#modal-add table th{
+    font-size:12px;
+    white-space:nowrap;
+
+}
+/*#modal-add table td{
+    padding:8px 0;
+}*/
 .status-level{
     margin-top:15px;
     display:none;
@@ -207,4 +215,10 @@ td, th {
 }
 #description{
     width:100%;
+}
+.work-on{
+    color:#fff;background-color:green;font-size:10px;padding:2px 4px;
+}
+.work-off{
+    color:#fff;background-color:red;padding:2px 4px;font-size:10px;
 }
